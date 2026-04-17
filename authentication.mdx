@@ -1,0 +1,42 @@
+---
+title: "Authentication"
+description: "How to authenticate with the Screen Manager API."
+---
+
+All API requests require your **organization token** (`org_token`) as a path parameter. There are no additional headers or API keys required.
+
+## Getting your token
+
+1. Go to [dashboard.framen.com/account/orgs](https://dashboard.framen.com/account/orgs)
+2. Copy your **Org ID** from the organization settings page
+
+Your token will look like this:
+
+```
+Org_4KmTqZnWpLx
+```
+
+## Using the token
+
+Include your organization token as a path parameter in all API requests:
+
+```bash
+curl -X GET "https://api.framen.com/vendor/Org_4KmTqZnWpLx/locations"
+```
+
+For a POST request to create a location:
+
+```bash
+curl -X POST "https://api.framen.com/vendor/Org_4KmTqZnWpLx/locations" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Downtown Mall",
+    "latitude": 40.7128,
+    "longitude": -74.0060,
+    "venue_type": "retail"
+  }'
+```
+
+<Warning>
+Keep your organization token confidential. Treat it like a password and do not commit it to version control or share it publicly. If your token is compromised, contact support@framen.com immediately.
+</Warning>

@@ -1,0 +1,94 @@
+---
+title: "Overview"
+description: "Understand the three-level venue type taxonomy for classifying locations and screens."
+---
+
+## Venue Type Taxonomy
+
+Venue types form a three-level hierarchical tree used for ad targeting and location classification within the FRAMEN Screen Manager API. This taxonomy allows precise targeting of ad campaigns based on where screens are physically located and their specific placement within a venue.
+
+### Hierarchy Structure
+
+The venue type system is organized into three distinct levels:
+
+```
+Level 1: Category (not selectable)
+  Level 2: Location type (assign to Locations)
+    Level 3: Screen placement (assign to Screens)
+```
+
+- **Level 1 (Category)**: Non-selectable organizational groups that serve as the top-level categorization. Examples include "Transit", "Retail", and "Hospitality".
+- **Level 2 (Location type)**: Venue types assigned directly to Locations. These describe the general type of physical venue (e.g., "Airport", "Shopping Mall", "Hotel").
+- **Level 3 (Screen placement)**: Venue types assigned to Screens. These describe the specific placement or zone within a location (e.g., "Arrival Hall", "Food Court", "Lobby").
+
+### Assignment Rules
+
+Different entity types can be assigned venue types at different levels according to these rules:
+
+| Entity | Allowed levels | Rule |
+|--------|----------------|------|
+| Location | Level 2 only | Pick the venue type that best describes the physical place |
+| Screen | Level 2 or 3 | Must be the same as the location's type (level 2) or a child of it (level 3) |
+
+### Parent-Child Constraint
+
+A critical validation rule ensures data integrity: **a screen's venue type must be related to its parent location's venue type via the `parent_id` field**. This means:
+
+- If a Location is assigned venue type "Airport" (Level 2), its Screens can be assigned either "Airport" (Level 2) or children like "Arrival Hall" or "Departure Lounge" (Level 3, parent_id = "Airport").
+- Cross-branch assignments are invalid. A Screen in a "Hotel" Location cannot be assigned a venue type under the "Airport" branch.
+
+### Venue Type Object Definition
+
+Each venue type object contains the following fields:
+
+- **id** (string): Unique identifier for the venue type
+- **name** (string): Display name of the venue type
+- **level** (integer): The hierarchical level (1, 2, or 3)
+- **parent_id** (string or null): The ID of the parent venue type; null for Level 1 categories
+
+### Python Validation Logic
+
+Here's an example of how to validate venue type assignments in Python:
+
+```python
+def validate_screen_venue_type(location_venue_type, screen_venue_type, venue_types_map):
+    """
+    Validate that a screen's venue type is compatible with its location's venue type.
+
+    Args:
+        location_venue_type: The venue type object assigned to the location
+        screen_venue_type: The venue type object to be assigned to the screen
+        venue_types_map: A dict mapping venue_type_id -> venue_type_object
+
+    Returns:
+        bool: True if valid, False otherwise
+    """
+    # Location must be Level 2
+    if location_venue_type['level'] != 2:
+        return False
+
+    # Screen must be Level 2 or 3
+    if screen_venue_type['level'] not in [2, 3]:
+        return False
+
+    # If screen is Level 2, must match location
+    if screen_venue_type['level'] == 2:
+        return screen_venue_type['id'] == location_venue_type['id']
+
+    # If screen is Level 3, must be a child of location
+    if screen_venue_type['level'] == 3:
+        return screen_venue_type['parent_id'] == location_venue_type['id']
+
+    return False
+```
+
+### Why Venue Types Matter
+
+Venue types are critical to the FRAMEN system because they directly impact:
+
+- **Ad Targeting**: Advertisers use venue types to specify where their campaigns should run, ensuring ads reach the right audience in the right context.
+- **Fill Rate**: Proper classification increases the likelihood that available inventory matches advertiser targeting criteria, improving fill rates and reducing unsold ad slots.
+- **Revenue Optimization**: Accurate venue type assignment enables better matching between supply and demand, maximizing revenue per screen.
+- **Campaign Performance**: Misclassified venues can result in poor audience targeting, wasted impressions, and advertiser dissatisfaction.
+
+Always ensure that locations and screens are assigned the appropriate venue types according to their physical characteristics and purpose within the broader venue hierarchy.

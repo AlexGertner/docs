@@ -1,0 +1,33 @@
+---
+title: 'Introduction'
+description: 'Welcome to the FRAMEN Screen Manager API'
+---
+
+## Overview
+
+The FRAMEN Screen Manager API lets you programmatically manage your digital signage network. Use it to register physical locations, configure screens, control ad delivery, and manage creative approvals.
+
+### Base URL
+
+```
+https://api.framen.com
+```
+
+### What you can do
+
+- **Locations** — Create and manage physical venues where screens are installed
+- **Screens** — Register and configure individual displays within locations
+- **Venue Types** — Browse the classification system for your locations
+- **Ad Delivery** — Request ad creatives for real-time playback on screens
+- **Creatives** — Review and approve or reject creative assets before they go live
+
+## Getting started
+
+1. **Get your organization token** — See [Authentication](/authentication) for how to find your `org_token`
+2. **Create a location** — Register your first physical venue via [Create a location](/api-reference/locations/create)
+3. **Add a screen** — Attach a screen to the location via [Create a screen](/api-reference/screens/create)
+4. **Go live** — Once your location is approved, request ads via [Get Spot](/api-reference/ad-delivery/get-spot)
+
+<Info>
+  All API requests use your `org_token` as a path parameter. There are no additional headers or API keys required.
+  </Info>

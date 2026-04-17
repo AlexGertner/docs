@@ -1,0 +1,90 @@
+---
+title: "Overview"
+description: "Review and manage Creative Approval Requests (CARs) for your organization."
+---
+
+## What are Creative Approval Requests (CARs)?
+
+Creative Approval Requests are a critical part of your screen network management workflow. When advertisers want to run their creatives on your screens, they submit a CAR containing the creative asset (image or video), advertiser information, and targeting details. As a screen network operator, you review these submissions and decide whether to approve or reject them based on your content standards and business requirements.
+
+## CAR Lifecycle
+
+1. **Pending**: A new CAR arrives in your queue with status `pending`. The advertiser has submitted a creative for review.
+2. **Review**: You examine the creative asset, advertiser information, and targeting details.
+3. **Decision**: You either approve the creative to make it eligible for delivery, or reject it with specific reasons.
+4. **Active**: Approved creatives with active campaigns become candidates for ad delivery on your screens.
+
+## CAR Object
+
+A Creative Approval Request contains the following properties:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `car_id` | string | Unique CAR identifier (e.g., `car_Xy7Kp2mN9qR4`) |
+| `status` | string | Current status: `pending`, `approved`, or `rejected` |
+| `advertiser_name` | string | Name of the advertiser submitting the creative |
+| `cities` | array | Array of city names targeted by this campaign |
+| `countries` | array | Array of country codes targeted by this campaign |
+| `item` | object | The creative asset object (see below) |
+| `rejection_reasons` | array \| null | Array of rejection reason codes if rejected, otherwise null |
+| `custom_message` | string \| null | Custom message provided during rejection, if applicable |
+| `created_on` | string | ISO 8601 timestamp when CAR was created |
+
+### Item Sub-Object
+
+The `item` object contains details about the media asset:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `url` | string | URL to the creative media file (image or video) |
+| `title` | string | Creative asset name |
+| `width` | integer | Width of the creative in pixels |
+| `height` | integer | Height of the creative in pixels |
+| `duration` | integer | Duration in seconds (0 for static images) |
+| `mimeType` | string | MIME type of the asset (e.g., `video/mp4`, `image/jpeg`) |
+| `size` | integer | File size in bytes |
+| `md5` | string | MD5 hash of the creative file |
+
+## Example CAR Object
+
+```json
+{
+  "car_id": "car_Xy7Kp2mN9qR4",
+  "status": "pending",
+  "advertiser_name": "Acme Corporation",
+  "cities": ["Berlin", "Munich"],
+  "countries": ["DEU"],
+  "item": {
+    "url": "https://assets.example.com/creatives/acme-summer-2026.mp4",
+    "title": "Acme Summer Campaign",
+    "width": 1920,
+    "height": 1080,
+    "duration": 15,
+    "mimeType": "video/mp4",
+    "size": 2456789,
+    "md5": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4"
+  },
+  "rejection_reasons": null,
+  "custom_message": null,
+  "created_on": "2026-03-28T14:30:00Z"
+}
+```
+
+## Active Creatives
+
+The `cars_active` endpoint returns a filtered list of approved CARs whose campaigns are forecasted to deliver to your screens soon. This is useful for **pre-caching creative assets** to your content delivery infrastructure before ads are scheduled to run.
+
+Use this endpoint periodically to:
+- Download and cache video/image assets locally
+- Validate creative quality before delivery
+- Prepare your screens for upcoming ad campaigns
+- Monitor active advertising campaigns in your network
+
+## Next Steps
+
+Explore the Creative Approval Requests API endpoints:
+- [List all creatives](/api-reference/creative-approvals/list-all)
+- [List active creatives](/api-reference/creative-approvals/list-active)
+- [Get a creative](/api-reference/creative-approvals/get)
+- [Approve a creative](/api-reference/creative-approvals/approve)
+- [Reject a creative](/api-reference/creative-approvals/reject)

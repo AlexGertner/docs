@@ -1,0 +1,78 @@
+---
+title: Venue Types
+description: Retrieve the venue type taxonomy used to classify Locations and Screens
+---
+
+# Venue Types
+
+Venue Types form a **3-level taxonomy** used to classify the environment of your Locations and Screens. They are managed by Framen — you can only read them.
+
+## Taxonomy Structure
+
+| Level | Role | Selectable | Example |
+|-------|------|------------|---------|
+| 1 | Category root | ❌ | Transit |
+| 2 | Assign to **Locations** | ✅ | Airport |
+| 3 | Assign to **Screens** | ✅ | Arrival Hall (Airport) |
+
+<Info>
+Screens must have either the **same** `venue_type_id` as their Location (level 2) or one of that venue type's **children** (level 3).
+</Info>
+
+---
+
+## Get Venue Types
+
+<api-endpoint method="GET" url="https://api.framen.com/vendor/{org_token}/venue_types" />
+
+Returns all available Venue Types.
+
+### Path Parameters
+
+| Parameter | Type | Required | Example |
+|-----------|------|----------|---------|
+| `org_token` | string | ✅ | `Org_9WeJxcVrRnM` |
+
+### Response
+
+Returns an **array** of Venue Type objects.
+
+| Field | Type | Example | Notes |
+|-------|------|---------|-------|
+| `id` | string | `1` | Referenced as `venue_type_id` in Locations & Screens |
+| `label` | string | `Transit` | Human-readable name |
+| `parent_id` | string \| null | `null` | `null` for level 1 roots |
+| `level` | int | `1` | 1, 2, or 3 |
+| `selectable` | boolean | `false` | Only `true` for levels 2 and 3 |
+| `description` | string \| null | `null` | Environment description |
+
+### Example Response
+
+```json
+[
+  {
+    "label": "Transit",
+    "id": "1",
+    "parent_id": null,
+    "level": 1,
+    "selectable": false,
+    "description": null
+  },
+  {
+    "label": "Airport",
+    "id": "101",
+    "parent_id": "1",
+    "level": 2,
+    "selectable": true,
+    "description": "Signage located throughout terminals in arrival and departure areas, ticketing areas, baggage claim, gate-hold rooms, concourses, retail shops, and VIP lounges."
+  },
+  {
+    "label": "Arrival Hall (Airport)",
+    "id": "101",
+    "parent_id": "101",
+    "level": 3,
+    "selectable": true,
+    "description": "Signage is positioned at locations for meeting passengers arriving on flights."
+  }
+]
+```

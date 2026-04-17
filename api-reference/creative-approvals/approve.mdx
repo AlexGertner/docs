@@ -1,0 +1,32 @@
+---
+title: "Approve a creative"
+description: "Approve a Creative Approval Request."
+api: "POST https://api.framen.com/vendor/{org_token}/cars/{car_id}/approve"
+---
+
+## Approve a creative
+
+Approve a Creative Approval Request, making the creative eligible for delivery on your screens. Once approved, the creative becomes available for active campaign scheduling.
+
+<ParamField path="org_token" type="string" required>
+  Your organization token (e.g., `Org_4KmTqZnWpLx`).
+</ParamField>
+
+<ParamField path="car_id" type="string" required>
+  The CAR identifier (e.g., `car_Xy7Kp2mN9qR4`).
+</ParamField>
+
+### Request Body
+
+No request body is required. The approval action is performed based on the path parameters alone.
+
+### Response
+
+Returns the updated CAR object with status changed to `approved` and the `updated_at` timestamp reflecting the approval action.
+
+### Example Request
+
+```bash
+curl -X POST "https://api.framen.com/vendor/Org_4KmTqZnWpLx/cars/car_Xy7Kp2mN9qR4/approve" \
+  -H "Content-Type: application/json"
+```

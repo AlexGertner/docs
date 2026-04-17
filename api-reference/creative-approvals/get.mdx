@@ -1,0 +1,68 @@
+---
+title: "Get a creative"
+description: "Retrieve a single CAR by ID."
+api: "GET https://api.framen.com/vendor/{org_token}/cars/{car_id}"
+---
+
+Retrieve a single Creative Approval Request by its ID. Use this to fetch detailed information about a specific creative submission.
+
+<ParamField path="org_token" type="string" required>
+  Your organization token (e.g., `Org_4KmTqZnWpLx`).
+</ParamField>
+
+<ParamField path="car_id" type="string" required>
+  The CAR identifier (e.g., `car_Xy7Kp2mN9qR4`).
+</ParamField>
+
+### Response
+
+Returns a single CAR object with complete details including the creative asset information, current status, and timestamp.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `car_id` | string | Unique CAR identifier |
+| `status` | string | Current status: `pending`, `approved`, or `rejected` |
+| `advertiser_name` | string | Name of the advertiser |
+| `cities` | array | Array of targeted city names |
+| `countries` | array | Array of targeted country codes |
+| `item` | object | Creative asset object (see [Overview](/api-reference/creative-approvals/overview) for full schema) |
+| `rejection_reasons` | array \| null | Rejection reasons if rejected, otherwise null |
+| `custom_message` | string \| null | Custom rejection message if provided |
+| `created_on` | string | ISO 8601 creation timestamp |
+
+### Example Request
+
+```bash
+curl -X GET "https://api.framen.com/vendor/Org_4KmTqZnWpLx/cars/car_Xy7Kp2mN9qR4"
+```
+
+### Example Response
+
+```json
+{
+  "car_id": "car_Xy7Kp2mN9qR4",
+  "status": "pending",
+  "advertiser_name": "Acme Corporation",
+  "cities": ["Berlin", "Munich"],
+  "countries": ["DEU"],
+  "item": {
+    "url": "https://assets.example.com/creatives/acme-summer-2026.mp4",
+    "title": "Acme Summer Campaign",
+    "width": 1920,
+    "height": 1080,
+    "duration": 15,
+    "mimeType": "video/mp4",
+    "size": 2456789,
+    "md5": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4"
+  },
+  "rejection_reasons": null,
+  "custom_message": null,
+  "created_on": "2026-03-28T14:30:00Z"
+}
+```
+
+### Error Responses
+
+| Status | Description |
+| --- | --- |
+| 404 | CAR not found or invalid `car_id` |

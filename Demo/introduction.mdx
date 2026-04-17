@@ -1,0 +1,47 @@
+---
+title: Introduction
+description: Welcome to the Framen Screen Management API (SMAPI)
+---
+
+# Framen SMAPI
+
+The **Framen Screen Management API (SMAPI)** gives vendors programmatic control over their digital signage inventory — locations, screens, and venue classifications — and enables ad delivery via the Vendor Default API.
+
+## Base URL
+
+```
+https://api.framen.com
+```
+
+## Key Concepts
+
+<CardGroup cols={2}>
+  <Card title="Locations" icon="map-pin" href="/api-reference/inventory/locations">
+    Geographical anchors that group screens. Must exist before screens can be created.
+  </Card>
+  <Card title="Screens" icon="tv" href="/api-reference/inventory/screens">
+    Individual display units. Always belong to a Location and inherit its venue context.
+  </Card>
+  <Card title="Venue Types" icon="building" href="/api-reference/inventory/venue-types">
+    A 3-level taxonomy (e.g. Transit → Airport → Arrival Hall) used to classify inventory.
+  </Card>
+  <Card title="Ad Delivery" icon="play" href="/api-reference/inventory/get-spot">
+    Request creatives for playout and confirm delivery via Proof of Play.
+  </Card>
+</CardGroup>
+
+## Inventory Lifecycle
+
+Locations go through a mandatory approval workflow before screens can serve ads:
+
+```
+DRAFT → REVIEW → APPROVED
+```
+
+- **DRAFT** — created, not yet submitted
+- **REVIEW** — submitted for Framen approval; editing core fields returns it to REVIEW
+- **APPROVED** — live and eligible for ad delivery
+
+<Note>
+Updating `venue_type_id`, `lat`, or `long` on an approved Location will reset it to **REVIEW** status. Campaign delivery may be affected during this period.
+</Note>

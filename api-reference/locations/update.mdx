@@ -1,0 +1,76 @@
+---
+title: "Update a Location"
+description: "Update an existing location's details."
+api: "POST https://api.framen.com/vendor/{org_token}/locations/{location_id}"
+---
+
+## Update a Location
+
+Update an existing location's details. All body parameters are optional â only include the fields you want to change.
+
+<ParamField path="org_token" type="string" required>
+  Your organization token (e.g., `Org_4KmTqZnWpLx`).
+</ParamField>
+
+<ParamField path="location_id" type="string" required>
+  The unique identifier of the location to update.
+</ParamField>
+
+<ParamField body="title" type="string">
+  Display name of the location.
+</ParamField>
+
+<ParamField body="venue_type_id" type="string">
+  Must be a **level 2** venue type ID from the [Venue Types](/api-reference/venue-types/list) endpoint.
+</ParamField>
+
+<ParamField body="lat" type="number">
+  Latitude coordinate (WGS84, range: -90 to 90).
+</ParamField>
+
+<ParamField body="long" type="number">
+  Longitude coordinate (WGS84, range: -180 to 180).
+</ParamField>
+
+<ParamField body="opening_168" type="boolean[168]">
+  Hourly opening schedule for one week (168 booleans). Index 0 = Monday 00:00.
+</ParamField>
+
+<ParamField body="visitors_7" type="int[7]">
+  Daily visitor counts, Monday through Sunday.
+</ParamField>
+
+<ParamField body="status" type="string">
+  Location status. Can only be changed via `DRAFT â REVIEW`. You cannot set it to `APPROVED` yourself.
+</ParamField>
+
+<ParamField body="available_for_ads" type="boolean">
+  Whether the location is available for ad campaigns. Cannot be set while status is `DRAFT` or `REVIEW`.
+</ParamField>
+
+<ParamField body="archived" type="boolean">
+  Whether the location is archived.
+</ParamField>
+
+<ParamField body="email" type="string">
+  Contact email for the location.
+</ParamField>
+
+<ParamField body="phone" type="string">
+  Contact phone number for the location.
+</ParamField>
+
+<Warning>
+If the location status is `APPROVED` and you update `venue_type_id`, `lat`, or `long`, the status will revert to `REVIEW` and must be re-approved by FRAMEN. Campaign delivery may be affected.
+</Warning>
+
+### Example Request
+
+```bash
+curl -X POST https://api.framen.com/vendor/Org_4KmTqZnWpLx/locations/Loc_f9FxuWDTfzy \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Berlin Hauptbahnhof - West Wing",
+    "visitors_7": [600, 700, 800, 900, 1000, 1100, 500]
+  }'
+```

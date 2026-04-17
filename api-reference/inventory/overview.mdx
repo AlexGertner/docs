@@ -1,0 +1,49 @@
+---
+title: "Inventory Overview"
+description: "Overview of the FRAMEN Inventory Management API (SMAPI) for managing locations and screens."
+---
+
+# Inventory Management API
+
+The Inventory Management API (also called SMAPI) lets you manage your digital signage network — creating and maintaining locations, screens, and their venue classifications.
+
+## Core concepts
+
+**Locations** represent physical places where screens are installed (shopping malls, airports, gyms, hotels, etc.). Each location has geographic coordinates, an opening schedule, visitor estimates, and a venue type classification.
+
+**Screens** represent individual display devices (or groups of identical devices) at a location. Each screen has a resolution, loop duration, and its own venue type that must be related to the parent location's type.
+
+**Venue types** form a three-level taxonomy used for ad targeting. Locations are assigned a level 2 venue type, and screens can use either the same level 2 type or a more specific level 3 child type.
+
+## Workflow
+
+The typical integration workflow is:
+
+1. **Fetch venue types** — Call the [Venue Types API](/api-reference/inventory/venue-types) to get the taxonomy. Cache this and refresh daily.
+2. **Create locations** — Use the [Locations API](/api-reference/inventory/locations) to register each physical place. New locations start in `DRAFT` status and move to `REVIEW` when coordinates and venue type are set.
+3. **Create screens** — Use the [Screens API](/api-reference/inventory/screens) to register display devices under each location.
+4. **Wait for approval** — FRAMEN reviews locations and approves them for ad delivery. Once a location reaches `APPROVED` status, its screens can start receiving ads.
+5. **Request ads** — Use the [Real-Time Ads API](/api-reference/inventory/get-spot) to fetch ad creatives for each screen during playback.
+
+## Location approval workflow
+
+```
+DRAFT → REVIEW → APPROVED
+```
+
+| Status | Meaning |
+|--------|---------|
+| `DRAFT` | Location created but missing required fields (coordinates, venue type) |
+| `REVIEW` | All required fields set — awaiting FRAMEN review |
+| `APPROVED` | Location approved for ad delivery |
+
+<Warning>
+Updating `lat`, `long`, or `venue_type_id` on an approved location resets it to `REVIEW` status, which may temporarily halt ad delivery to its screens.
+</Warning>
+
+## Important data formats
+
+Two array-based data formats are used across the inventory APIs:
+
+- **`opening_168`** — A 168-element boolean array representing hourly open/closed status for each hour of the week (Monday 00:00 through Sunday 23:00). See [Data Formats](/data-formats#opening_168).
+- **`visitors_7`** — A 7-element integer array with estimated daily visitor counts (Monday through Sunday). See [Data Formats](/data-formats#visitors_7).

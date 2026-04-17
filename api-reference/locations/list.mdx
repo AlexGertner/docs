@@ -1,0 +1,23 @@
+---
+title: "List Locations"
+description: "Retrieve all locations in your organization."
+api: "GET https://api.framen.com/vendor/{org_token}/locations"
+---
+
+## List Locations
+
+Retrieve all locations in your organization.
+
+<ParamField path="org_token" type="string" required>
+  Your organization token (e.g., `Org_4KmTqZnWpLx`).
+</ParamField>
+
+### Response
+
+Returns an array of Location objects.
+
+### Example Request
+
+```bash
+curl -X GET https://api.framen.com/vendor/Org_4KmTqZnWpLx/locations
+```

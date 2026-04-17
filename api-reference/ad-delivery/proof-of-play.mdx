@@ -1,0 +1,22 @@
+---
+title: "Proof of Play"
+description: "Confirm that content has been displayed on a screen."
+api: "GET https://api.framen.com/v3/vendor/{org_token}/pop/{pop_id}"
+---
+
+## Proof of Play
+
+The `pop` field returned in the [Get Spot](/api-reference/ad-delivery/get-spot) response is a GET URL that **must be called exactly once** after the content has been displayed. It confirms playback to FRAMEN.
+
+### Rules
+
+- A proof-of-play URL can only be registered **once**. Subsequent calls will be ignored.
+- The proof-of-play request **must happen within 1 hour** of the original ad request.
+
+### Example
+
+After displaying the content from a Get Spot response, fire the proof-of-play URL:
+
+```bash
+curl -X GET "https://api.framen.com/v3/vendor/Org_4KmTqZnWpLx/pop/pop_abc123def456"
+```

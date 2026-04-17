@@ -1,0 +1,183 @@
+---
+title: "Data Formats"
+description: "Detailed specification of opening_168, visitors_7, and the venue type hierarchy."
+---
+
+# Data Formats
+
+This page documents the data formats used across the FRAMEN API that require special attention: the weekly opening schedule, daily visitor counts, and the venue type taxonomy structure.
+
+## opening_168
+
+A boolean array of exactly **168 elements** representing the hourly open/closed status for one full week (7 days × 24 hours).
+
+### Index mapping
+
+The array starts at **Monday 00:00** and ends at **Sunday 23:00**:
+
+| Index | Day | Hour |
+|-------|-----|------|
+| 0 | Monday | 00:00–01:00 |
+| 1 | Monday | 01:00–02:00 |
+| ... | ... | ... |
+| 23 | Monday | 23:00–24:00 |
+| 24 | Tuesday | 00:00–01:00 |
+| ... | ... | ... |
+| 167 | Sunday | 23:00–24:00 |
+
+### Formula
+
+```
+index = (day_of_week × 24) + hour
+```
+
+Where `day_of_week` is: Monday = 0, Tuesday = 1, Wednesday = 2, Thursday = 3, Friday = 4, Saturday = 5, Sunday = 6.
+
+### Values
+
+| Value | Meaning |
+|-------|---------|
+| `true` | The location is open during this hour |
+| `false` | The location is closed during this hour |
+
+### Example: Open Mon–Fri 09:00–18:00, closed weekends
+
+```python
+opening_168 = [False] * 168
+
+for day in range(5):  # Monday (0) through Friday (4)
+    for hour in range(9, 18):  # 09:00 to 17:59
+        opening_168[day * 24 + hour] = True
+```
+
+Result: indices 9–17 are `true` for Monday through Friday (days 0–4), everything else is `false`.
+
+### Example: Open every day 00:00–24:00 (24/7)
+
+```python
+opening_168 = [True] * 168
+```
+
+### Overnight hours
+
+For locations open past midnight (e.g., a bar open Friday 20:00 to Saturday 03:00), set the late-night hours on the **next day**:
+
+```python
+# Friday 20:00 to Saturday 03:00
+for hour in range(20, 24):
+    opening_168[4 * 24 + hour] = True   # Friday 20:00–23:59
+for hour in range(0, 3):
+    opening_168[5 * 24 + hour] = True   # Saturday 00:00–02:59
+```
+
+<Note>
+When converting from opening/closing time pairs to `opening_168`, always model overnight spans as crossing into the next day's indices rather than extending the current day beyond 24 hours.
+</Note>
+
+---
+
+## visitors_7
+
+An integer array of exactly **7 elements** representing estimated daily visitor counts.
+
+### Index mapping
+
+| Index | Day |
+|-------|-----|
+| 0 | Monday |
+| 1 | Tuesday |
+| 2 | Wednesday |
+| 3 | Thursday |
+| 4 | Friday |
+| 5 | Saturday |
+| 6 | Sunday |
+
+### Values
+
+Each value is a non-negative integer representing the estimated number of visitors on that day. Use `0` for days when the location is closed.
+
+### Example
+
+```json
+[15000, 15000, 15000, 15000, 18000, 22000, 12000]
+```
+
+This represents a location with approximately 15,000 visitors on weekdays, more on Saturday (22,000), and fewer on Sunday (12,000).
+
+### Consistency with opening_168
+
+Visitor counts should be consistent with the opening schedule: days where `opening_168` shows the location as fully closed should have a visitor count of `0`. Having visitors on a closed day is not an API error, but it may cause inconsistencies in reporting.
+
+---
+
+## Venue type hierarchy
+
+Venue types form a three-level tree structure used for ad targeting. Understanding this hierarchy is important for correctly classifying locations and screens.
+
+### Structure
+
+```
+Level 1: Category (not selectable)
+ └── Level 2: Location type (assign to Locations)
+      └── Level 3: Screen placement (assign to Screens)
+```
+
+### ID conventions
+
+Venue type IDs encode the hierarchy. Level 3 IDs typically start with their level 2 parent's ID as a prefix:
+
+| Level | Example ID | Label | Parent ID |
+|-------|-----------|-------|-----------|
+| 1 | `1` | Transit | `null` |
+| 2 | `101` | Airport | `1` |
+| 3 | `10101` | Arrival Hall (Airport) | `101` |
+| 3 | `10102` | Departure Lounge (Airport) | `101` |
+
+You can verify the relationship by checking the `parent_id` field in the [Venue Types API](/api-reference/inventory/venue-types) response.
+
+### Assignment rules
+
+| Entity | Allowed levels | Rule |
+|--------|---------------|------|
+| Location | Level 2 only | Pick the venue type that best describes the physical place |
+| Screen | Level 2 or 3 | Must be the **same** as the location's type (level 2) or a **child** of it (level 3) |
+
+### Validation logic
+
+To verify that a screen's venue type is valid for its parent location:
+
+```python
+def is_valid_screen_venue_type(screen_vt_id, location_vt_id, venue_types):
+    """Check if screen venue type is same as or child of location venue type."""
+    if screen_vt_id == location_vt_id:
+        return True  # Same level 2 type
+
+    # Find the screen's venue type and check its parent
+    screen_vt = next((vt for vt in venue_types if vt["id"] == screen_vt_id), None)
+    if screen_vt and screen_vt["level"] == 3:
+        return screen_vt["parent_id"] == location_vt_id
+
+    return False
+```
+
+### Why it matters
+
+Venue types drive ad targeting. Advertisers create campaigns targeting specific venue types (e.g., "show this ad in all Shopping Malls"). Incorrectly classified locations and screens will either miss relevant campaigns or receive irrelevant ones, directly impacting fill rate and revenue.
+
+---
+
+## Common pitfalls
+
+1. **opening_168 starts on Monday, not Sunday.** Index 0 is Monday 00:00. Many calendar libraries default to Sunday as the first day of the week.
+
+2. **Duration units differ between APIs.** Screen `loop_duration` is in seconds. Ad/news `duration` in the Real-Time Ads response is in milliseconds.
+
+3. **Geo fields are read-only.** Do not send `timezone`, `country`, `region`, `city`, `zip`, or `address` in create/update requests. They are auto-derived from coordinates.
+
+4. **Duplicate screen IDs are rejected, not upserted.** The client generates `screen_id` (UUID format). If you accidentally reuse one, the create request will fail.
+
+5. **Changing coordinates or venue type triggers re-review.** Updating `lat`, `long`, or `venue_type_id` on an approved location resets it to `REVIEW` status, which may temporarily halt ad delivery.
+
+6. **Location vs. screen `available_for_ads` behave differently.** Disabling at the location level only hides it from future targeting. Disabling at the screen level immediately stops ad delivery. To halt ads quickly, always disable at the screen level.
+
+7. **PoP URLs expire after 1 hour.** Proof-of-play callbacks must be fired within 1 hour of the original ad request. Plan your caching and playback pipeline accordingly.

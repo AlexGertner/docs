@@ -1,0 +1,108 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Screen Manager API",
+  "theme": "palm",
+  "logo": {
+    "light": "https://cdn.prod.website-files.com/6364e4e8baec60a3a1eff938/690b1e4179acc4f0aa8d1c51_Logo.svg",
+    "dark": "https://cdn.prod.website-files.com/6364e4e8baec60a3a1eff938/690b1e4179acc4f0aa8d1c51_Logo.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#47b6a8",
+    "light": "#88B7EF0",
+    "dark": "#5A4DC0"
+  },
+  "topbarLinks": [
+    {
+      "name": "Support",
+      "url": "mailto:support@framen.com"
+    },
+    {
+      "name": "Login",
+      "url": "https://dashboard.framen.com/login"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Dashboard",
+    "url": "https://dashboard.framen.com",
+    "arrow": true
+  },
+  "api": {
+    "baseUrl": "https://api.framen.com"
+  },
+  "openapi": "openapi.json",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/api-reference/introduction"
+    }
+  ],
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Screen Manager",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "api-reference/introduction",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Locations",
+            "pages": [
+              "api-reference/locations/overview",
+              "api-reference/locations/create",
+              "api-reference/locations/get",
+              "api-reference/locations/update",
+              "api-reference/locations/list"
+            ]
+          },
+          {
+            "group": "Data types",
+            "pages": [
+              "api-reference/data-formats/opening-168",
+              "api-reference/data-formats/visitors-7"
+            ]
+          },
+          {
+            "group": "Screens",
+            "pages": [
+              "api-reference/screens/overview",
+              "api-reference/screens/create",
+              "api-reference/screens/get",
+              "api-reference/screens/update",
+              "api-reference/screens/list"
+            ]
+          },
+          {
+            "group": "Venue Types",
+            "pages": [
+              "api-reference/venue-types/overview",
+              "api-reference/venue-types/list"
+            ]
+          },
+          {
+            "group": "Ad Delivery",
+            "pages": [
+              "api-reference/ad-delivery/get-spot",
+              "api-reference/ad-delivery/proof-of-play"
+            ]
+          },
+          {
+            "group": "Creatives",
+            "pages": [
+              "api-reference/creative-approvals/overview",
+              "api-reference/creative-approvals/list-all",
+              "api-reference/creative-approvals/list-active",
+              "api-reference/creative-approvals/get",
+              "api-reference/creative-approvals/approve",
+              "api-reference/creative-approvals/reject"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

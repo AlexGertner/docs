@@ -1,0 +1,62 @@
+---
+title: "Get Spot"
+description: "Request a single creative for a single playout on a specific screen."
+api: "GET https://api.framen.com/v3/vendor/{org_token}/1/rt_ad/{screen_id}"
+---
+
+## Get Spot
+
+Request a single creative for a single playout on a specific screen. Returns content (news or ad) along with a proof-of-play URL.
+
+This is part of the **Vendor Default API** for real-time ad serving, separate from the SMAPI CRUD endpoints.
+
+<ParamField path="org_token" type="string" required>
+  Your organization token (e.g., `Org_4KmTqZnWpLx`).
+</ParamField>
+
+<ParamField path="screen_id" type="string" required>
+  The unique identifier of the screen requesting content.
+</ParamField>
+
+### Response
+
+The response `data` object contains:
+
+| Field | Type | Description |
+|---|---|---|
+| `requestId` | string | Unique ID for this request |
+| `billable` | boolean | Whether this playout is billable |
+| `newsFirst` | boolean | Whether news should play before the ad |
+
+The `data` object also contains two nested content objects: **`news`** and **`ad`**. Both share the same schema:
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | string | Content item ID |
+| `title` | string | Content title |
+| `mimeType` | string | e.g., `text/html`, `video/mp4` |
+| `height` | integer | Pixel height |
+| `width` | integer | Pixel width |
+| `duration` | integer | Duration in **milliseconds** |
+| `url` | string | URL to fetch/render the content |
+| `pop` | string | Proof-of-play callback URL (GET) |
+
+The `news` object additionally contains:
+
+| Field | Type | Description |
+|---|---|---|
+| `newsType` | string | News category (e.g., `WELT_WISSEN`) |
+
+### Request Cycle Flow
+
+1. Player sends ad-request â receives ad-response (containing news + ad + pop URLs).
+2. Player pre-caches content.
+3. Player plays the content.
+4. Player fires the proof-of-play GET request. **Must happen within 1 hour** of the original request.
+5. Repeat for next spot.
+
+### Example Request
+
+```bash
+curl -X GET https://api.framen.com/v3/vendor/Org_4KmTqZnWpLx/1/rt_ad/Scr_xYz789
+```

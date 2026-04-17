@@ -1,0 +1,152 @@
+---
+title: Locations
+description: Create, retrieve, and update Locations in your Framen organization
+---
+
+# Locations
+
+Locations are geographical anchors that group screens and define their environment. **Screens cannot exist without a Location**, so always create Locations first.
+
+<Warning>
+Locations go through an approval process performed by Framen. Only **APPROVED** locations can serve ads. Status moves: `DRAFT → REVIEW → APPROVED`.
+</Warning>
+
+---
+
+## Create Location
+
+<api-endpoint method="POST" url="https://api.framen.com/vendor/{org_token}/locations" />
+
+Creates a new Location within your organization. The Location starts in `DRAFT` status.
+
+To move to `REVIEW`, populate all fields marked **Required for Review** in the body params below.
+
+### Path Parameters
+
+| Parameter | Type | Required | Example |
+|-----------|------|----------|---------|
+| `org_token` | string | ✅ | `Org_9WeJxcVrRnM` |
+
+### Body Parameters
+
+| Parameter | Type | Required | Required for Review | Example |
+|-----------|------|----------|---------------------|---------|
+| `title` | string | ✅ | ✅ | `Demo Location for API tests` |
+| `venue_type_id` | enum | — | ✅ | `7FR-147067ae-e630-46da-b31a-56dad634ec4a` |
+| `lat` | float | — | ✅ | `52.5049418` |
+| `long` | float | — | ✅ | `13.3935712` |
+| `opening_168` | boolean[168] | — | ✅ | `{false,...,true,true,...,false}` |
+| `visitors_7` | int[7] | — | ✅ | `{100,100,100,100,100,0,0}` |
+| `archived` | boolean | — | — | `false` |
+| `email` | string | — | — | `admin@framen.com` |
+| `phone` | string | — | — | `+49 0307 67752625` |
+
+<Info>
+`venue_type_id` must be of **level 2**. Retrieve the full list via [Get Venue Types](/api-reference/inventory/venue-types).
+</Info>
+
+### Response
+
+```json
+{
+  "location_id": "Loc_f9FxuWDTfzy",
+  "title": "Demo Location for API tests",
+  "status": "DRAFT",
+  "available_for_ads": true,
+  "venue_type_id": "7FR-147067ae-e630-46da-b31a-56dad634ec4a",
+  "lat": 52.5049418,
+  "long": 13.3935712,
+  "opening_168": [false, false, ..., true, true, ..., false],
+  "visitors_7": [100, 100, 100, 100, 100, 0, 0],
+  "archived": false,
+  "timezone": "Europe/Berlin",
+  "country": "DEU",
+  "region": "Berlin",
+  "city": "Berlin",
+  "zip": "10888",
+  "address": "Axel-Springer-Straße 65",
+  "email": "admin@framen.com",
+  "phone": "+49 0307 67752625"
+}
+```
+
+---
+
+## Get All Locations
+
+<api-endpoint method="GET" url="https://api.framen.com/vendor/{org_token}/locations" />
+
+Returns a list of all Locations in your organization.
+
+### Path Parameters
+
+| Parameter | Type | Required | Example |
+|-----------|------|----------|---------|
+| `org_token` | string | ✅ | `Org_9WeJxcVrRnM` |
+
+### Response
+
+Returns an **array** of Location objects. Each object contains the same fields as the Create Location response above.
+
+---
+
+## Get Location
+
+<api-endpoint method="GET" url="https://api.framen.com/vendor/{org_token}/locations/{location_id}" />
+
+Returns a single Location by ID.
+
+### Path Parameters
+
+| Parameter | Type | Required | Example |
+|-----------|------|----------|---------|
+| `org_token` | string | ✅ | `Org_9WeJxcVrRnM` |
+| `location_id` | string | ✅ | `Loc_f9FxuWDTfzy` |
+
+### Response
+
+Returns a single Location object (same schema as Create response).
+
+---
+
+## Update Location
+
+<api-endpoint method="POST" url="https://api.framen.com/vendor/{org_token}/locations/{location_id}" />
+
+Updates an existing Location. All body parameters are optional.
+
+### Path Parameters
+
+| Parameter | Type | Required | Example |
+|-----------|------|----------|---------|
+| `org_token` | string | ✅ | `Org_9WeJxcVrRnM` |
+| `location_id` | string | ✅ | `Loc_f9FxuWDTfzy` |
+
+### Body Parameters
+
+| Parameter | Type | Required for Review | Notes |
+|-----------|------|---------------------|-------|
+| `title` | string | ✅ | |
+| `status` | string | ✅ | Use `REVIEW` to submit for approval |
+| `available_for_ads` | boolean | — | Cannot be set while status is `DRAFT` or `REVIEW` |
+| `venue_type_id` | enum | ✅ | Triggers re-review if Location was `APPROVED` |
+| `lat` | float | ✅ | Triggers re-review if Location was `APPROVED` |
+| `long` | float | ✅ | Triggers re-review if Location was `APPROVED` |
+| `opening_168` | boolean[168] | ✅ | |
+| `visitors_7` | int[7] | ✅ | |
+| `archived` | boolean | — | |
+| `email` | string | — | |
+| `phone` | string | — | |
+
+<Warning>
+If the Location is **APPROVED** and you update `venue_type_id`, `lat`, or `long`, the status reverts to **REVIEW** and must go through approval again. Campaign delivery may be interrupted.
+</Warning>
+
+### Status Transition Rules
+
+- `DRAFT → REVIEW`: Set `status: "REVIEW"` in the update body. All review-required fields must be populated.
+- `available_for_ads` can only be used when `status = APPROVED`.
+
+### Response
+
+Returns the updated Location object with `status: "REVIEW"`.

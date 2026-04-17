@@ -1,0 +1,39 @@
+---
+title: "Get all creatives"
+description: "List all Creative Approval Requests in your organization."
+api: "GET https://api.framen.com/vendor/{org_token}/cars"
+---
+
+## Get all creatives
+
+Retrieve a list of all Creative Approval Requests for your organization. This includes creatives with all statuses: pending, approved, and rejected.
+
+<ParamField path="org_token" type="string" required>
+  Your organization token (e.g., `Org_4KmTqZnWpLx`).
+</ParamField>
+
+### Response
+
+Returns an array of CAR objects. Each object contains the complete creative details, current status, and relevant timestamps.
+
+### Response Schema
+
+Array of objects with the following properties:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| id | string | Unique CAR identifier |
+| status | string | Current status: `pending`, `approved`, or `rejected` |
+| advertiser_name | string | Name of the advertiser |
+| campaign_name | string | Name of the advertising campaign |
+| creative | object | Creative asset object with url, width, height, duration, mime_type |
+| rejection_reasons | array \| null | Rejection reasons if rejected, otherwise null |
+| custom_message | string \| null | Custom rejection message if provided |
+| created_at | string | ISO 8601 creation timestamp |
+| updated_at | string | ISO 8601 last modified timestamp |
+
+### Example Request
+
+```bash
+curl -X GET "https://api.framen.com/vendor/Org_4KmTqZnWpLx/cars"
+```

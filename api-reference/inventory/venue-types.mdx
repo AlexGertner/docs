@@ -1,0 +1,101 @@
+---
+title: "Venue Types"
+description: "Retrieve the venue type taxonomy used to classify locations and screens."
+---
+
+# Venue Types API
+
+Venue types classify where screens are physically placed. They form a three-level hierarchy used for ad targeting â advertisers select campaigns based on venue types, so accurate classification directly affects which ads your screens receive and how much revenue they generate.
+
+## The Venue Type object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique venue type identifier |
+| `label` | string | Human-readable name (e.g., "Airport", "Shopping Mall") |
+| `parent_id` | string \| null | ID of the parent venue type. `null` for level 1 entries. |
+| `level` | int | Hierarchy level: `1`, `2`, or `3` |
+| `selectable` | boolean | Whether this type can be assigned to a location or screen |
+| `description` | string \| null | Explanation of what this venue type represents |
+
+## Hierarchy levels
+
+| Level | Selectable | Assign to | Example |
+|-------|-----------|-----------|---------|
+| 1 | No | â | "Transit", "Retail", "Hospitality" |
+| 2 | Yes | **Locations** | "Airport", "Shopping Mall", "Hotel" |
+| 3 | Yes | **Screens** | "Arrival Hall (Airport)", "Food Court (Mall)" |
+
+Level 1 entries are category groups â they exist only for organizational purposes and cannot be assigned to locations or screens. When creating a location, use a **level 2** venue type. When creating a screen, use either the **same level 2** type as the parent location, or one of that type's **level 3 children**.
+
+### Parent-child constraint
+
+A screen's venue type must be related to its parent location's venue type:
+
+```
+Location: venue_type_id = "101" (Airport, level 2)
+  âââ Screen: venue_type_id = "101"    â Same as location (level 2)
+  âââ Screen: venue_type_id = "10101"  â Child of "101" (level 3)
+  âââ Screen: venue_type_id = "501"    â Unrelated venue type
+```
+
+You can verify relationships using the `parent_id` field: a level 3 entry's `parent_id` will match the `id` of its level 2 parent.
+
+See [Data Formats â Venue Type Hierarchy](/data-formats#venue-type-hierarchy) for more details on the ID structure.
+
+---
+
+## List all venue types
+
+```
+GET /vendor/{org_token}/venue_types
+```
+
+This is a read-only endpoint. Venue types are managed by FRAMEN and cannot be created or modified through the API.
+
+### Path parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `org_token` | string | Yes | Your organization token |
+
+### Example request
+
+```bash
+curl -X GET "https://api.framen.com/vendor/Org_9WeJxcVrRnM/venue_types"
+```
+
+### Example response
+
+```json
+[
+  {
+    "label": "Transit",
+    "id": "1",
+    "parent_id": null,
+    "level": 1,
+    "selectable": false,
+    "description": null
+  },
+  {
+    "label": "Airport",
+    "id": "101",
+    "parent_id": "1",
+    "level": 2,
+    "selectable": true,
+    "description": "Signage located throughout terminals in arrival and departure areas, ticketing areas, baggage claim, gate-hold rooms, concourses, retail shops, and VIP lounges."
+  },
+  {
+    "label": "Arrival Hall (Airport)",
+    "id": "10101",
+    "parent_id": "101",
+    "level": 3,
+    "selectable": true,
+    "description": "Signage is positioned at locations for meeting passengers arriving on flights."
+  }
+]
+```
+
+### Response
+
+Returns an array of all venue types in the taxonomy. There is no pagination or filtering â the full taxonomy is returned in a single response. Cache this response and refresh periodically (e.g., daily) rather than fetching it on every operation.

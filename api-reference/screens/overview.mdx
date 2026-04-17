@@ -1,0 +1,70 @@
+---
+title: "Overview"
+description: "Manage individual display devices within your locations."
+---
+
+## Screens
+
+Screens represent individual display devices deployed within a location. Each screen displays advertisements in a continuous loop and is identified by its unique configuration, including resolution and loop timing parameters.
+
+### Key Concepts
+
+- **Screen**: A physical or virtual display device that plays a sequence of ads
+- **Location**: Parent location containing one or more screens
+- **Loop Duration**: The total time (in seconds) for one complete rotation through all queued advertisements
+- **Venue Type**: Classification that must match or be compatible with the parent location's venue type
+- **Resolution**: Pixel dimensions (width x height) of the display
+
+Before creating screens, you must first create a location. Each screen belongs to exactly one location and inherits the location's organizational context.
+
+### Screen Object
+
+The Screen object contains all configuration and metadata for a display device:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `screen_id` | string | Unique identifier for the screen (client-generated, UUID format) |
+| `title` | string | Human-readable label for the screen (e.g., "Main Lobby Display") |
+| `venue_type_id` | string | Venue type classification; must match or be a child type of the location's venue type |
+| `location_id` | string | ID of the parent location |
+| `width` | integer | Pixel width of the display resolution |
+| `height` | integer | Pixel height of the display resolution |
+| `loop_duration` | integer | Duration in seconds for one complete advertisement loop |
+| `archived` | boolean | Whether hidden from Dashboard. Default: `false` |
+| `available_for_ads` | boolean | Whether the screen accepts ad campaigns. Default: `true` |
+| `amount` | integer | Number of physical screens this entry represents |
+| `imps_weekly` | integer | Estimated weekly impressions |
+
+### Example Screen Object
+
+```json
+{
+  "screen_id": "d3c8dbb6-c21b-4b26-8f35-d73260c95fa1",
+  "title": "Main Lobby Display",
+  "venue_type_id": "602",
+  "location_id": "Loc_f9FxuWDTfzy",
+  "width": 1920,
+  "height": 1080,
+  "loop_duration": 120,
+  "archived": false,
+  "available_for_ads": true,
+  "amount": 1,
+  "imps_weekly": 12503
+}
+```
+
+### Common Use Cases
+
+- **Create a Screen**: Add a new display device to your location with specific resolution and timing parameters
+- **Retrieve Screen Details**: Look up configuration and metadata for a specific screen
+- **Update Screen Settings**: Modify display name, loop duration, or venue classification
+- **List Organization Screens**: View all screens deployed across your organization
+- **Manage Ad Content**: Use the screen ID to request and manage advertisements for that specific display
+
+### Requirements
+
+- Parent location must exist before creating screens
+- Screen `venue_type_id` must be compatible with the location's venue type hierarchy
+- Resolution values (width/height) must be positive integers
+- Loop duration must be a positive integer representing seconds
+- The client generates the `screen_id` (UUID format). Sending a duplicate returns an error.

@@ -1,0 +1,70 @@
+---
+title: 'Overview'
+description: 'Location object definition and approval workflow.'
+---
+
+Locations are the containers for your screens. Each location represents a physical place (mall, airport, gym, office building, etc.) where one or more screens are installed. Locations hold geo-coordinates, opening hours, and visitor estimates. They go through an approval workflow before they can receive ads.
+
+<Info>
+You must create a location before you can add screens to it. Screens inherit their geographic context from their parent location.
+</Info>
+
+## The Location object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `location_id` | string | Unique identifier assigned by the system |
+| `title` | string | Human-readable location name |
+| `status` | string | Approval status: `DRAFT`, `REVIEW`, or `APPROVED` |
+| `available_for_ads` | boolean | Whether ads can be delivered to screens at this location |
+| `venue_type_id` | string | Level 2 venue type ID (see [Venue Types](/api-reference/venue-types/list)) |
+| `lat` | float | Latitude (-90 to 90) |
+| `long` | float | Longitude (-180 to 180) |
+| `opening_168` | boolean[168] | Hourly open/closed schedule (see [Opening 168](/data-formats/opening-168)) |
+| `visitors_7` | int[7] | Daily visitor estimates, Monday through Sunday (see [Visitors 7](/data-formats/visitors-7)) |
+| `archived` | boolean | Whether the location is hidden from the dashboard |
+| `timezone` | string | IANA timezone, auto-derived from coordinates (e.g., `Europe/Berlin`) |
+| `country` | string | ISO 3166-1 alpha-3 country code, auto-derived |
+| `region` | string | Region or state name, auto-derived |
+| `city` | string | City name, auto-derived |
+| `zip` | string | Postal code, auto-derived |
+| `address` | string | Street address, auto-derived |
+| `email` | string | Contact email for this location |
+| `phone` | string | Contact phone for this location |
+
+<Info>
+The fields `timezone`, `country`, `region`, `city`, `zip`, and `address` are **read-only**. They are automatically derived from `lat` and `long`. Do not include them in create or update requests.
+</Info>
+
+## Approval workflow
+
+Locations go through a three-stage approval process:
+
+```
+DRAFT -> REVIEW -> APPROVED
+```
+
+| Status | Trigger | What it means |
+|--------|---------|---------------|
+| `DRAFT` | Created without all required fields | Location is incomplete. Cannot receive ads. |
+| `REVIEW` | All required fields provided | Awaiting review. Cannot receive ads yet. |
+| `APPROVED` | Location is approved | Eligible for ad delivery. `available_for_ads` can now be set. |
+
+**Fields required for REVIEW status**: `title`, `venue_type_id`, `lat`, `long`, `opening_168`, `visitors_7`.
+
+When all of these fields are present on creation, the location skips `DRAFT` and goes directly to `REVIEW`.
+
+<Warning>
+Updating `venue_type_id`, `lat`, or `long` on an `APPROVED` location **resets its status to `REVIEW`**. This may temporarily disrupt ad delivery to screens at that location.
+</Warning>
+
+## Archiving vs. disabling ads
+
+There are two ways to take a location out of active use:
+
+| Action | Effect |
+|--------|--------|
+| `"archived": true` | Hides the location from the dashboard. Screens remain but are effectively inactive. |
+| `"available_for_ads": false` | Location becomes invisible to the Ads Manager for **new** campaign targeting. Already running campaigns **continue delivering**. |
+
+To immediately stop all ad delivery at a location, set `available_for_ads: false` on each individual [screen](/api-reference/screens/overview).

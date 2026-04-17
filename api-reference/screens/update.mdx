@@ -1,0 +1,73 @@
+---
+title: "Update a Screen"
+description: "Update an existing screen's details."
+api: "POST https://api.framen.com/vendor/{org_token}/screens/{screen_id}"
+---
+
+## Update a Screen
+
+Update an existing screen's details. All body parameters are optional â only include the fields you want to change.
+
+<ParamField path="org_token" type="string" required>
+  Your organization token (e.g., `Org_4KmTqZnWpLx`).
+</ParamField>
+
+<ParamField path="screen_id" type="string" required>
+  The unique identifier of the screen to update.
+</ParamField>
+
+<ParamField body="title" type="string">
+  Display name of the screen.
+</ParamField>
+
+<ParamField body="venue_type_id" type="string">
+  Must be the same as or a child of the parent Location's `venue_type_id`.
+</ParamField>
+
+<ParamField body="location_id" type="string">
+  Must reference an existing Location.
+</ParamField>
+
+<ParamField body="width" type="integer">
+  Pixel width of the screen.
+</ParamField>
+
+<ParamField body="height" type="integer">
+  Pixel height of the screen.
+</ParamField>
+
+<ParamField body="loop_duration" type="integer">
+  Loop duration in seconds.
+</ParamField>
+
+<ParamField body="archived" type="boolean">
+  Whether the screen is archived.
+</ParamField>
+
+<ParamField body="available_for_ads" type="boolean">
+  Whether the screen is available for ad campaigns.
+</ParamField>
+
+<ParamField body="amount" type="integer">
+  Number of physical screens this entry represents.
+</ParamField>
+
+<ParamField body="imps_weekly" type="integer">
+  Estimated weekly impressions.
+</ParamField>
+
+<Warning>
+Changing `location_id` will set the Location's status to `REVIEW`, even if it was previously `APPROVED`.
+</Warning>
+
+### Example Request
+
+```bash
+curl -X POST https://api.framen.com/vendor/Org_4KmTqZnWpLx/screens/Scr_xYz789 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Lobby Display A - Updated",
+    "width": 3840,
+    "height": 2160
+  }'
+```

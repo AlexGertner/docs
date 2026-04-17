@@ -1,0 +1,32 @@
+---
+title: "Get all active creatives"
+description: "List active Creative Approval Requests forecasted for delivery."
+api: "GET https://api.framen.com/vendor/{org_token}/cars_active"
+---
+
+## Get all active creatives
+
+Retrieve a list of all active Creative Approval Requests that are forecasted to deliver to your screens soon. These are approved CARs from campaigns with active schedules.
+
+### Purpose
+
+This endpoint returns creatives that are actively scheduled or about to run on your screen network. Use this to:
+
+- **Pre-cache assets**: Download and cache creative media files before delivery
+- **Prepare infrastructure**: Validate asset quality and availability ahead of ad delivery
+- **Monitor campaigns**: Track which approved creatives are actively scheduled
+- **Optimize delivery**: Ensure creative assets are available locally for fast playback
+
+<ParamField path="org_token" type="string" required>
+  Your organization token (e.g., `Org_4KmTqZnWpLx`).
+</ParamField>
+
+### Response
+
+Returns an array of approved CAR objects with active campaigns. All creatives in this response have status `approved`.
+
+### Example Request
+
+```bash
+curl -X GET "https://api.framen.com/vendor/Org_4KmTqZnWpLx/cars_active"
+```

@@ -1,0 +1,71 @@
+---
+title: "Create a Location"
+description: "Register a new physical location in your organization."
+api: "POST https://api.framen.com/vendor/{org_token}/locations"
+---
+
+## Create a Location
+
+Register a new physical location in your organization. The location will initially be created with a `DRAFT` status and must be approved before screens can be deployed.
+
+Locations go through an approval process: `DRAFT → REVIEW → APPROVED`. Providing all "required for Review" fields automatically moves the status to `REVIEW`. FRAMEN then performs the approval.
+
+<ParamField path="org_token" type="string" required>
+  Your organization token (e.g., `Org_4KmTqZnWpLx`).
+</ParamField>
+
+<ParamField body="location_id" type="string" required>
+  Your unique identifier for this location (e.g., `Loc_f9FxuWDTfzy`).
+</ParamField>
+
+<ParamField body="title" type="string" required>
+  Display name of the location.
+</ParamField>
+
+<ParamField body="venue_type_id" type="string">
+  Must be a **level 2** venue type ID from the [Venue Types](/api-reference/venue-types/list) endpoint. Required for Review.
+</ParamField>
+
+<ParamField body="lat" type="number">
+  Latitude coordinate (WGS84, range: -90 to 90). Required for Review.
+</ParamField>
+
+<ParamField body="long" type="number">
+  Longitude coordinate (WGS84, range: -180 to 180). Required for Review.
+</ParamField>
+
+<ParamField body="opening_168" type="boolean[168]">
+  Hourly opening schedule for one week (168 booleans). Index 0 = Monday 00:00. Required for Review.
+</ParamField>
+
+<ParamField body="visitors_7" type="int[7]">
+  Daily visitor counts, Monday through Sunday. Required for Review.
+</ParamField>
+
+<ParamField body="archived" type="boolean">
+  Whether the location is archived. Default: `false`.
+</ParamField>
+
+<ParamField body="email" type="string">
+  Contact email for the location.
+</ParamField>
+
+<ParamField body="phone" type="string">
+  Contact phone number for the location.
+</ParamField>
+
+### Example Request
+
+```bash
+curl -X POST https://api.framen.com/vendor/{org_token}/locations \
+  -H "Content-Type: application/json" \
+  -d '{
+    "location_id": "Loc_f9FxuWDTfzy",
+    "title": "Berlin Hauptbahnhof",
+    "venue_type_id": "vt_abc123",
+    "lat": 52.5251,
+    "long": 13.3694,
+    "opening_168": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false],
+    "visitors_7": [500, 600, 700, 800, 900, 1000, 400]
+  }'
+```

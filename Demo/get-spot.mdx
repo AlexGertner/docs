@@ -1,0 +1,103 @@
+---
+title: Get Spot
+description: Request a creative for playout and confirm delivery via Proof of Play
+---
+
+# Get Spot
+
+The Vendor Default API lets you request a single ad creative for a specific screen, then confirm delivery via a **Proof of Play** (PoP) callback.
+
+<Warning>
+The Proof of Play URL returned in each response must be fired within **1 hour** of the request. It can only be registered **once**.
+</Warning>
+
+---
+
+## Get Spot
+
+<api-endpoint method="GET" url="https://api.framen.com/v3/vendor/{org_token}/1/rt_ad/{screen_id}" />
+
+Requests a creative for a single playout on the specified screen.
+
+### Path Parameters
+
+| Parameter | Type | Required | Example |
+|-----------|------|----------|---------|
+| `org_token` | string | ✅ | `Org_9WeJxcVrRnM` |
+| `screen_id` | string | ✅ | `d3c8dbb6-c21b-4b26-8f35-d73260c95fa1` |
+
+### Response
+
+The response contains a `data` object with two possible content types: `news` and `ad`.
+
+#### `data.request`
+
+| Field | Type | Example |
+|-------|------|---------|
+| `id` | string | `3f7655be-2c46-4d98-a8d5-5bcb03d118c9` |
+
+#### `data.news`
+
+| Field | Type | Example | Notes |
+|-------|------|---------|-------|
+| `id` | string | `Itm_8Mfw51PXwMt` | |
+| `title` | string | `Putzerlippfische erkennen sich` | |
+| `mimeType` | string | `text/html` | |
+| `height` | int | `1080` | |
+| `width` | int | `1920` | |
+| `newsType` | string | `WELT_WISSEN` | |
+| `duration` | int | `15000` | Milliseconds |
+| `url` | string | `https://framen.tv/lite/?itemId=685997` | Render URL |
+| `pop` | string | `https://api.framen.com/v3/lite_feedback?...` | Proof of Play URL |
+
+#### `data.ad`
+
+| Field | Type | Example | Notes |
+|-------|------|---------|-------|
+| `id` | string | `1Hisf8pfqrm2VgZWrakDm` | |
+| `title` | string | `Test_Creative_6_Landscape10sec` | |
+| `mimeType` | string | `video/mp4` | |
+| `height` | int | `1080` | |
+| `width` | int | `1920` | |
+| `duration` | int | `10000` | Milliseconds |
+| `url` | string | `https://framen-pics.s3.eu-central-1.amazonaws.com/...` | Asset URL |
+| `pop` | string | `https://api.framen.com/v3/lite_feedback?...` | Proof of Play URL |
+| `billable` | boolean | `true` \| `false` | |
+| `newsFirst` | boolean | `true` \| `false` | |
+
+---
+
+## Proof of Play
+
+Every content item in the response includes a `pop` field — a GET URL that **must be called exactly once** after the item has been displayed.
+
+```
+GET {pop_url}
+```
+
+<Warning>
+- Fire the PoP URL **within 1 hour** of the original ad request
+- Each PoP URL can only be registered **once** — duplicate calls are ignored
+- Failing to fire PoP means the playout is not confirmed and may affect billing
+</Warning>
+
+---
+
+## Request Cycle
+
+The typical integration loop works like this:
+
+<Steps>
+  <Step title="Pre-cache: Request Ad">
+    Call `GET /rt_ad/{screen_id}` ahead of the scheduled slot to pre-fetch the creative.
+  </Step>
+  <Step title="Display the Creative">
+    Render the `url` from `data.ad` or `data.news` on screen for the specified `duration`.
+  </Step>
+  <Step title="Fire Proof of Play">
+    Immediately after display, call the `pop` URL once via GET. Must happen within 1 hour of the original request.
+  </Step>
+  <Step title="Repeat">
+    Request the next creative for the following slot, overlapping pre-cache with the current playout.
+  </Step>
+</Steps>

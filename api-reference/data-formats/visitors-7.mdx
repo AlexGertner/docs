@@ -1,0 +1,30 @@
+---
+title: 'Daily Visitors (visitors_7)'
+description: 'Weekly expected-visitors array used when creating or updating a location.'
+---
+
+The `visitors_7` field is a JSON array of **7 integers** — one per day of the week, starting with Monday — representing the expected number of daily visitors at a location.
+
+## Structure
+
+| Index | Day       |
+|-------|-----------|
+| 0     | Monday    |
+| 1     | Tuesday   |
+| 2     | Wednesday |
+| 3     | Thursday  |
+| 4     | Friday    |
+| 5     | Saturday  |
+| 6     | Sunday    |
+
+## Example
+
+A café that expects roughly 200 visitors on weekdays, 350 on Saturdays, and 150 on Sundays:
+
+```json
+[200, 200, 200, 200, 200, 350, 150]
+```
+
+<Info>
+  The array must always contain exactly 7 elements. Passing fewer or more will result in a validation error.
+  </Info>

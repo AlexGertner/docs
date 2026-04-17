@@ -1,0 +1,40 @@
+---
+title: 'Opening Hours (opening_168)'
+description: 'Weekly opening-hours array used when creating or updating a location.'
+---
+
+The `opening_168` field is a JSON array of **168 integers** (one per hour of the week, starting Monday 00:00) that tells the FRAMEN platform when a location is open.
+
+Each element is either **`1`** (open) or **`0`** (closed).
+
+## Structure
+
+| Index | Day | Hour |
+|-------|-----|------|
+| 0 | Monday | 00:00 |
+| 1 | Monday | 01:00 |
+| ... | ... | ... |
+| 23 | Monday | 23:00 |
+| 24 | Tuesday | 00:00 |
+| ... | ... | ... |
+| 167 | Sunday | 23:00 |
+
+## Example
+
+A location open Monday to Friday, 08:00 -- 20:00:
+
+```json
+[
+  0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,
+    0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,
+      0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,
+        0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,
+          0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+              0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+              ]
+              ```
+
+              <Info>
+                The array must always contain exactly 168 elements. Passing fewer or more will result in a validation error.
+                </Info>

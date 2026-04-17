@@ -1,0 +1,237 @@
+---
+title: "Locations"
+description: "Create, retrieve, and update physical locations where screens are installed."
+---
+
+# Locations API
+
+A location represents a physical place (mall, airport, gym, office building, etc.) where one or more screens are installed. Locations are the parent entity for screens and go through an approval workflow before they can receive ads.
+
+## The Location object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `location_id` | string | Unique identifier assigned by FRAMEN (e.g., `Loc_f9FxuWDTfzy`) |
+| `title` | string | Human-readable location name |
+| `status` | string | Approval status: `DRAFT`, `REVIEW`, or `APPROVED` |
+| `available_for_ads` | boolean | Whether ads can be delivered to screens at this location |
+| `venue_type_id` | string | Level 2 venue type ID (see [Venue Types](/api-reference/inventory/venue-types)) |
+| `lat` | float | Latitude (-90 to 90) |
+| `long` | float | Longitude (-180 to 180) |
+| `opening_168` | boolean[168] | Hourly open/closed schedule (see [Data Formats](/data-formats#opening_168)) |
+| `visitors_7` | int[7] | Daily visitor estimates, Monday through Sunday (see [Data Formats](/data-formats#visitors_7)) |
+| `archived` | boolean | Whether the location is hidden from the dashboard |
+| `timezone` | string | IANA timezone, auto-derived from coordinates (e.g., `Europe/Berlin`) |
+| `country` | string | ISO 3166-1 alpha-3 country code, auto-derived |
+| `region` | string | Region or state name, auto-derived |
+| `city` | string | City name, auto-derived |
+| `zip` | string | Postal code, auto-derived |
+| `address` | string | Street address, auto-derived |
+| `email` | string | Contact email for this location |
+| `phone` | string | Contact phone for this location |
+
+<Info>
+The fields `timezone`, `country`, `region`, `city`, `zip`, and `address` are **read-only**. They are automatically derived from `lat` and `long` by FRAMEN. Do not include them in create or update requests.
+</Info>
+
+## Approval workflow
+
+Locations go through a three-stage approval process:
+
+```
+DRAFT â REVIEW â APPROVED
+```
+
+| Status | Trigger | What it means |
+|--------|---------|---------------|
+| `DRAFT` | Created without all required fields | Location is incomplete. Cannot receive ads. |
+| `REVIEW` | All required fields provided | Awaiting FRAMEN review. Cannot receive ads yet. |
+| `APPROVED` | FRAMEN approves the location | Eligible for ad delivery. `available_for_ads` can now be set. |
+
+**Fields required for REVIEW status**: `title`, `venue_type_id`, `lat`, `long`, `opening_168`, `visitors_7`.
+
+When all of these fields are present on creation, the location skips `DRAFT` and goes directly to `REVIEW`.
+
+<Warning>
+Updating `venue_type_id`, `lat`, or `long` on an `APPROVED` location **resets its status to `REVIEW`**. This may temporarily disrupt ad delivery to screens at that location.
+</Warning>
+
+---
+
+## Create a location
+
+```
+POST /vendor/{org_token}/locations
+```
+
+### Path parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `org_token` | string | Yes | Your organization token |
+
+### Request body
+
+| Field | Type | Required | Required for REVIEW | Description |
+|-------|------|----------|---------------------|-------------|
+| `title` | string | Yes | Yes | Location name |
+| `venue_type_id` | string | No | Yes | Must be a level 2 venue type ID |
+| `lat` | float | No | Yes | Latitude |
+| `long` | float | No | Yes | Longitude |
+| `opening_168` | boolean[168] | No | Yes | Hourly schedule (see [Data Formats](/data-formats#opening_168)) |
+| `visitors_7` | int[7] | No | Yes | Daily visitor counts (see [Data Formats](/data-formats#visitors_7)) |
+| `archived` | boolean | No | No | Default: `false` |
+| `email` | string | No | No | Contact email |
+| `phone` | string | No | No | Contact phone |
+
+### Example request
+
+```bash
+curl -X POST "https://api.framen.com/vendor/Org_9WeJxcVrRnM/locations" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Alexa Shopping Centre",
+    "venue_type_id": "501",
+    "lat": 52.5219,
+    "long": 13.4132,
+    "opening_168": [false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+    "visitors_7": [15000, 15000, 15000, 15000, 18000, 22000, 12000],
+    "email": "manager@example.com",
+    "phone": "+49 30 1234567"
+  }'
+```
+
+### Example response
+
+```json
+{
+  "location_id": "Loc_f9FxuWDTfzy",
+  "title": "Alexa Shopping Centre",
+  "status": "REVIEW",
+  "available_for_ads": false,
+  "venue_type_id": "501",
+  "lat": 52.5219,
+  "long": 13.4132,
+  "opening_168": [false, false, "... 168 booleans ..."],
+  "visitors_7": [15000, 15000, 15000, 15000, 18000, 22000, 12000],
+  "archived": false,
+  "timezone": "Europe/Berlin",
+  "country": "DEU",
+  "region": "Berlin",
+  "city": "Berlin",
+  "zip": "10178",
+  "address": "GrunerstraÃe 20",
+  "email": "manager@example.com",
+  "phone": "+49 30 1234567"
+}
+```
+
+---
+
+## List all locations
+
+```
+GET /vendor/{org_token}/locations
+```
+
+### Path parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `org_token` | string | Yes | Your organization token |
+
+### Example request
+
+```bash
+curl -X GET "https://api.framen.com/vendor/Org_9WeJxcVrRnM/locations"
+```
+
+### Response
+
+Returns an array of location objects. There is no pagination â all locations are returned in a single response.
+
+---
+
+## Get a location
+
+```
+GET /vendor/{org_token}/locations/{location_id}
+```
+
+### Path parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `org_token` | string | Yes | Your organization token |
+| `location_id` | string | Yes | The location ID (e.g., `Loc_f9FxuWDTfzy`) |
+
+### Example request
+
+```bash
+curl -X GET "https://api.framen.com/vendor/Org_9WeJxcVrRnM/locations/Loc_f9FxuWDTfzy"
+```
+
+### Response
+
+Returns a single location object. Returns `404` if the location does not exist.
+
+---
+
+## Update a location
+
+```
+POST /vendor/{org_token}/locations/{location_id}
+```
+
+Send only the fields you want to change. Omitted fields are left unchanged.
+
+### Path parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `org_token` | string | Yes | Your organization token |
+| `location_id` | string | Yes | The location ID |
+
+### Request body
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `title` | string | |
+| `venue_type_id` | string | Changing this resets status to `REVIEW` |
+| `lat` | float | Changing this resets status to `REVIEW` |
+| `long` | float | Changing this resets status to `REVIEW` |
+| `opening_168` | boolean[168] | |
+| `visitors_7` | int[7] | |
+| `archived` | boolean | |
+| `available_for_ads` | boolean | Only settable when status is `APPROVED` |
+| `status` | string | Can only be set to `REVIEW` (from `DRAFT`), requires all review fields |
+| `email` | string | |
+| `phone` | string | |
+
+### Example request
+
+```bash
+curl -X POST "https://api.framen.com/vendor/Org_9WeJxcVrRnM/locations/Loc_f9FxuWDTfzy" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Alexa Shopping Centre â Main Entrance",
+    "visitors_7": [16000, 16000, 16000, 16000, 19000, 24000, 13000]
+  }'
+```
+
+### Response
+
+Returns the updated location object.
+
+---
+
+## Archiving vs. disabling ads
+
+There are two ways to take a location out of active use:
+
+| Action | Effect |
+|--------|--------|
+| `"archived": true` | Hides the location from the dashboard. Screens remain but are effectively inactive. |
+| `"available_for_ads": false` | Location becomes invisible to the Ads Manager for **new** campaign targeting. Already running campaigns **continue delivering**. |
+
+To immediately stop all ad delivery at a location, set `available_for_ads: false` on each individual screen (see [Screens API](/api-reference/inventory/screens)).

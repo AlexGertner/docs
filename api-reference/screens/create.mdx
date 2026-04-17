@@ -1,0 +1,73 @@
+---
+title: "Create a Screen"
+description: "Register a new screen device at a location."
+api: "POST https://api.framen.com/vendor/{org_token}/screens"
+---
+
+## Create a Screen
+
+Register a new screen device at a location. Each screen belongs to exactly one Location.
+
+<ParamField path="org_token" type="string" required>
+  Your organization token (e.g., `Org_4KmTqZnWpLx`).
+</ParamField>
+
+<ParamField body="screen_id" type="string" required>
+  Your unique identifier for this screen.
+</ParamField>
+
+<ParamField body="title" type="string" required>
+  Display name of the screen.
+</ParamField>
+
+<ParamField body="venue_type_id" type="string" required>
+  Must be the same as or a child of the parent Location's `venue_type_id`. Use values from the [Venue Types](/api-reference/venue-types/list) endpoint.
+</ParamField>
+
+<ParamField body="location_id" type="string" required>
+  Must reference an existing Location.
+</ParamField>
+
+<ParamField body="width" type="integer" required>
+  Pixel width of the screen (e.g., `1920`).
+</ParamField>
+
+<ParamField body="height" type="integer" required>
+  Pixel height of the screen (e.g., `1080`).
+</ParamField>
+
+<ParamField body="loop_duration" type="integer" required>
+  Loop duration in seconds.
+</ParamField>
+
+<ParamField body="archived" type="boolean">
+  Whether the screen is archived. Default: `false`. When `true`, the screen disappears from the Dashboard UI.
+</ParamField>
+
+<ParamField body="available_for_ads" type="boolean">
+  Whether the screen is available for ad campaigns. Default: `true`.
+</ParamField>
+
+<ParamField body="amount" type="integer">
+  Number of physical screens this entry represents.
+</ParamField>
+
+<ParamField body="imps_weekly" type="integer">
+  Estimated weekly impressions.
+</ParamField>
+
+### Example Request
+
+```bash
+curl -X POST https://api.framen.com/vendor/Org_4KmTqZnWpLx/screens \
+  -H "Content-Type: application/json" \
+  -d '{
+    "screen_id": "Scr_xYz789",
+    "title": "Lobby Display A",
+    "venue_type_id": "vt_abc123",
+    "location_id": "Loc_f9FxuWDTfzy",
+    "width": 1920,
+    "height": 1080,
+    "loop_duration": 60
+  }'
+```

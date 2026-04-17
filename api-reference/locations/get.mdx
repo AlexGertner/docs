@@ -1,0 +1,52 @@
+---
+title: "Get a Location"
+description: "Retrieve a single location by its ID."
+api: "GET https://api.framen.com/vendor/{org_token}/locations/{location_id}"
+---
+
+## Get a Location
+
+Retrieve a single location by its ID.
+
+<ParamField path="org_token" type="string" required>
+  Your organization token (e.g., `Org_4KmTqZnWpLx`).
+</ParamField>
+
+<ParamField path="location_id" type="string" required>
+  The unique identifier of the location to retrieve.
+</ParamField>
+
+### Response
+
+Returns the Location object with all fields populated.
+
+### Example Request
+
+```bash
+curl -X GET https://api.framen.com/vendor/Org_4KmTqZnWpLx/locations/Loc_f9FxuWDTfzy
+```
+
+### Example Response
+
+```json
+{
+  "location_id": "Loc_f9FxuWDTfzy",
+  "title": "Downtown Plaza - Main Entrance",
+  "status": "APPROVED",
+  "available_for_ads": true,
+  "venue_type_id": "vt_abc123",
+  "lat": 40.7128,
+  "long": -74.006,
+  "opening_168": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false],
+  "visitors_7": [500, 600, 700, 800, 900, 1000, 400],
+  "archived": false,
+  "timezone": "America/New_York",
+  "country": "USA",
+  "region": "New York",
+  "city": "New York",
+  "zip": "10001",
+  "address": "123 Main Street, New York, NY 10001",
+  "email": "contact@example.com",
+  "phone": "+1-555-0100"
+}
+```

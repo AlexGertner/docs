@@ -1,0 +1,144 @@
+---
+title: Screens
+description: Create, retrieve, and update Screens in your Framen organization
+---
+
+# Screens
+
+Screens represent individual display units within a Location. They carry the technical specifications and audience data that power ad targeting and delivery.
+
+<Info>
+Screens cannot exist without a Location. Always [create a Location](/api-reference/inventory/locations) first.
+</Info>
+
+<Warning>
+`screen.venue_type_id` must be the same as — or a child of — `location.venue_type_id`. Mismatches will be rejected.
+</Warning>
+
+---
+
+## Create Screen
+
+<api-endpoint method="POST" url="https://api.framen.com/vendor/{org_token}/screens" />
+
+Creates a new Screen within your organization.
+
+### Path Parameters
+
+| Parameter | Type | Required | Example |
+|-----------|------|----------|---------|
+| `org_token` | string | ✅ | `Org_9WeJxcVrRnM` |
+
+### Body Parameters
+
+| Parameter | Type | Required | Example | Notes |
+|-----------|------|----------|---------|-------|
+| `screen_id` | string | ✅ | `d3c8dbb6-c21b-4b26-8f35-d73260c95fa1` | Your internal screen GUID |
+| `title` | string | ✅ | `Demo Screen Landscape` | |
+| `venue_type_id` | enum | ✅ | `7FR-147067ae-e630-46da-b31a-56dad634ec4a` | Must match or be child of location's venue type |
+| `location_id` | string | ✅ | `Loc_f9FxuWDTfzy` | |
+| `width` | int | ✅ | `1920` | Pixels |
+| `height` | int | ✅ | `1080` | Pixels |
+| `loop_duration` | int | ✅ | `120` | In seconds |
+| `archived` | boolean | — | `false` | When `true`, screen disappears from Dashboard UI |
+| `available_for_ads` | boolean | — | `true` | |
+| `amount` | int | — | `1` | Number of physical screens at this spot |
+| `imps_weekly` | int | — | `12503` | Weekly impressions estimate |
+
+<Info>
+Retrieve valid `venue_type_id` values from [Get Venue Types](/api-reference/inventory/venue-types).
+</Info>
+
+### Response
+
+```json
+{
+  "screen_id": "d3c8dbb6-c21b-4b26-8f35-d73260c95fa1",
+  "title": "Demo Screen Landscape",
+  "venue_type_id": "7FR-147067ae-e630-46da-b31a-56dad634ec4a",
+  "location_id": "Loc_f9FxuWDTfzy",
+  "width": 1920,
+  "height": 1080,
+  "loop_duration": 120,
+  "archived": false,
+  "available_for_ads": true,
+  "amount": 1,
+  "imps_weekly": 12503
+}
+```
+
+---
+
+## Get All Screens
+
+<api-endpoint method="GET" url="https://api.framen.com/vendor/{org_token}/screens" />
+
+Returns a list of all Screens in your organization.
+
+### Path Parameters
+
+| Parameter | Type | Required | Example |
+|-----------|------|----------|---------|
+| `org_token` | string | ✅ | `Org_9WeJxcVrRnM` |
+
+### Response
+
+Returns an **array** of Screen objects (same schema as Create response).
+
+---
+
+## Get Screen
+
+<api-endpoint method="GET" url="https://api.framen.com/vendor/{org_token}/screens/{screen_id}" />
+
+Returns a single Screen by ID.
+
+### Path Parameters
+
+| Parameter | Type | Required | Example |
+|-----------|------|----------|---------|
+| `org_token` | string | ✅ | `Org_9WeJxcVrRnM` |
+| `screen_id` | string | ✅ | `d3c8dbb6-c21b-4b26-8f35-d73260c95fa1` |
+
+### Response
+
+Returns a single Screen object (same schema as Create response).
+
+---
+
+## Update Screen
+
+<api-endpoint method="POST" url="https://api.framen.com/vendor/{org_token}/screens/{screen_id}" />
+
+Updates an existing Screen. All body parameters are optional.
+
+### Path Parameters
+
+| Parameter | Type | Required | Example |
+|-----------|------|----------|---------|
+| `org_token` | string | ✅ | `Org_9WeJxcVrRnM` |
+| `screen_id` | string | ✅ | `d3c8dbb6-c21b-4b26-8f35-d73260c95fa1` |
+
+### Body Parameters
+
+| Parameter | Type | Required | Notes |
+|-----------|------|----------|-------|
+| `screen_id` | string | — | |
+| `title` | string | — | |
+| `venue_type_id` | enum | — | Must remain compatible with Location's venue type |
+| `location_id` | string | — | ⚠️ Triggers Location re-review (see below) |
+| `width` | int | — | |
+| `height` | int | — | |
+| `loop_duration` | int | — | |
+| `archived` | boolean | — | Set to `true` to hide from Dashboard |
+| `available_for_ads` | boolean | — | |
+| `amount` | int | — | |
+| `imps_weekly` | int | — | |
+
+<Warning>
+Changing `location_id` sets the new Location's status to **REVIEW** — even if it was previously approved. Campaign delivery on that Location may be affected.
+</Warning>
+
+### Response
+
+Returns the updated Screen object.

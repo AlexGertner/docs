@@ -1,0 +1,71 @@
+---
+title: "Reject a Creative"
+description: "Reject a creative approval request (CAR) with one or more rejection reasons."
+api: "POST https://api.framen.com/vendor/{org_token}/cars/{car_id}/reject"
+---
+
+## Reject a Creative
+
+Reject a creative approval request (CAR) with one or more rejection reasons. Once rejected, the advertiser is notified and can submit a revised creative.
+
+<ParamField path="org_token" type="string" required>
+  Your organization token (e.g., `Org_4KmTqZnWpLx`). [Find it here](https://dashboard.framen.com/account/orgs).
+</ParamField>
+
+<ParamField path="car_id" type="string" required>
+  The unique identifier of the creative approval request (e.g., `car_Xy7Kp2mN9qR4`).
+</ParamField>
+
+<ParamField body="rejection_reasons" type="string[]" required>
+  Array of one or more rejection reason codes. Valid values: `ADVERTISER`, `INAPPROPRIATE`, `FILTER`, `CUSTOM`.
+</ParamField>
+
+<ParamField body="custom_message" type="string">
+  A custom rejection message. **Required** when `CUSTOM` is included in `rejection_reasons`.
+</ParamField>
+
+### Rejection Reasons
+
+| Code | Description |
+| --- | --- |
+| `ADVERTISER` | The advertiser is not approved to run on your network |
+| `INAPPROPRIATE` | The creative content is inappropriate for your venues |
+| `FILTER` | The creative does not meet your content filter criteria |
+| `CUSTOM` | Custom reason — requires a `custom_message` |
+
+### Example Request
+
+```bash
+curl -X POST "https://api.framen.com/vendor/Org_4KmTqZnWpLx/cars/car_Xy7Kp2mN9qR4/reject"
+  -H "Content-Type: application/json" \
+  -d '{
+    "rejection_reasons": ["INAPPROPRIATE", "CUSTOM"],
+    "custom_message": "Creative contains content not suitable for family-oriented venues"
+  }'
+```
+
+### Example Response
+
+```json
+{
+  "id": "car_Xy7Kp2mN9qR4",
+  "status": "rejected",
+  "advertiser_name": "Acme Corporation",
+  "campaign_name": "Summer Sale 2026",
+  "rejection_reasons": ["INAPPROPRIATE", "CUSTOM"],
+  "custom_message": "Creative contains content not suitable for family-oriented venues",
+  "created_at": "2026-03-28T14:30:00Z",
+  "updated_at": "2026-03-28T16:20:15Z"
+}
+```
+
+## Error Responses
+
+| Status | Error | Description |
+| --- | --- | --- |
+| 400 | Bad Request | CAR is already approved or rejected; cannot reject an already-decided creative. Also returned if rejection_reasons is missing or invalid. |
+| 401 | Unauthorized | Invalid or missing org_token |
+| 404 | Not Found | CAR not found; invalid car_id or organization does not own this CAR |
+| 422 | Unprocessable Entity | CUSTOM is in rejection_reasons but custom_message is missing or empty |
+| 429 | Too Many Requests | Rate limit exceeded; retry after delay |
+| 500 | Internal Server Error | Server error; please try again later |

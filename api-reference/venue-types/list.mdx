@@ -1,0 +1,71 @@
+---
+title: "List Venue Types"
+description: "Retrieve all available venue types."
+api: "GET https://api.framen.com/vendor/{org_token}/venue_types"
+---
+
+## List Venue Types
+
+Retrieve all available venue types. Venue types classify locations and screens into a **3-level hierarchy**:
+
+- **Level 1** â Category (not selectable, e.g., "Transit")
+- **Level 2** â Venue type (selectable, e.g., "Airport")
+- **Level 3** â Sub-venue type (selectable, e.g., "Arrival Hall (Airport)")
+
+The `id` values returned here are used as `venue_type_id` in both the Screens and Locations endpoints.
+
+**Constraint:** Locations must use a level 2 `venue_type_id`. Screens must use a `venue_type_id` that is either the same as their parent Location's (level 2) or one of its children (level 3).
+
+<ParamField path="org_token" type="string" required>
+  Your organization token (e.g., `Org_4KmTqZnWpLx`).
+</ParamField>
+
+### Response
+
+Returns an array of venue type objects.
+
+| Field | Type | Description |
+|---|---|---|
+| `label` | string | Display name (e.g., "Airport") |
+| `id` | string | Venue type ID (used as `venue_type_id` in Screens and Locations) |
+| `parent_id` | string \| null | ID of the parent venue type. `null` for level 1 |
+| `level` | integer | `1` = category, `2` = venue type, `3` = sub-venue type |
+| `selectable` | boolean | Whether this type can be assigned to a Location or Screen |
+| `description` | string \| null | Human-readable description of the venue type |
+
+### Example Request
+
+```bash
+curl -X GET https://api.framen.com/vendor/Org_4KmTqZnWpLx/venue_types
+```
+
+### Example Response
+
+```json
+[
+  {
+    "label": "Transit",
+    "id": "vt_transit_001",
+    "parent_id": null,
+    "level": 1,
+    "selectable": false,
+    "description": "Transportation hubs and stations"
+  },
+  {
+    "label": "Airport",
+    "id": "vt_airport_002",
+    "parent_id": "vt_transit_001",
+    "level": 2,
+    "selectable": true,
+    "description": "Airport terminals and facilities"
+  },
+  {
+    "label": "Arrival Hall (Airport)",
+    "id": "vt_arrival_003",
+    "parent_id": "vt_airport_002",
+    "level": 3,
+    "selectable": true,
+    "description": "Arrival hall area within an airport"
+  }
+]
+```

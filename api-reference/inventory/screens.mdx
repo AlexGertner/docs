@@ -1,0 +1,218 @@
+---
+title: "Screens"
+description: "Create, retrieve, and update display screens attached to locations."
+---
+
+# Screens API
+
+A screen represents an individual display device (or group of identical devices) at a location. Screens are the unit of ad delivery â ad requests are made per screen, and each screen has its own resolution, loop duration, and venue classification.
+
+## The Screen object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `screen_id` | string | Unique identifier in UUID format, provided by the client on creation |
+| `title` | string | Human-readable screen name |
+| `venue_type_id` | string | Venue type ID â must match or be a child of the parent location's venue type |
+| `location_id` | string | Parent location ID |
+| `width` | int | Screen resolution width in pixels |
+| `height` | int | Screen resolution height in pixels |
+| `loop_duration` | int | Ad loop duration in **seconds** |
+| `archived` | boolean | Whether the screen is hidden from the dashboard |
+| `available_for_ads` | boolean | Whether the screen accepts ad delivery |
+| `amount` | int | Number of physical display units this entry represents |
+| `imps_weekly` | int | Estimated weekly impressions |
+
+## Key constraints
+
+**Venue type relationship** â A screen's `venue_type_id` must satisfy one of these conditions:
+- It is the **same** as the parent location's `venue_type_id` (level 2), or
+- It is a **child** (level 3) of the parent location's venue type
+
+Use the [Venue Types API](/api-reference/inventory/venue-types) to retrieve the taxonomy and verify parent-child relationships. The `parent_id` field in the venue type response indicates the hierarchy. A level 3 venue type's `parent_id` points to its level 2 parent.
+
+**Client-generated IDs** â Unlike locations (where FRAMEN assigns the `location_id`), you must generate the `screen_id` yourself in UUID v4 format. Sending a duplicate `screen_id` on creation returns an error â the API does not upsert.
+
+**Location must exist first** â You cannot create a screen for a `location_id` that does not exist. Always create the location before its screens.
+
+---
+
+## Create a screen
+
+```
+POST /vendor/{org_token}/screens
+```
+
+### Path parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `org_token` | string | Yes | Your organization token |
+
+### Request body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `screen_id` | string | Yes | Unique ID in UUID format (client-generated) |
+| `title` | string | Yes | Screen name |
+| `venue_type_id` | string | Yes | Must match or be a child of the location's venue type |
+| `location_id` | string | Yes | Parent location ID |
+| `width` | int | Yes | Resolution width in pixels |
+| `height` | int | Yes | Resolution height in pixels |
+| `loop_duration` | int | Yes | Loop duration in **seconds** |
+| `archived` | boolean | No | Default: `false` |
+| `available_for_ads` | boolean | No | Default: `true` |
+| `amount` | int | No | Number of physical screens this entry represents |
+| `imps_weekly` | int | No | Estimated weekly impressions |
+
+### Example request
+
+```bash
+curl -X POST "https://api.framen.com/vendor/Org_9WeJxcVrRnM/screens" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "screen_id": "d3c8dbb6-c21b-4b26-8f35-d73260c95fa1",
+    "title": "Entrance Display Left",
+    "venue_type_id": "501",
+    "location_id": "Loc_f9FxuWDTfzy",
+    "width": 1920,
+    "height": 1080,
+    "loop_duration": 60,
+    "amount": 1
+  }'
+```
+
+### Example response
+
+```json
+{
+  "screen_id": "d3c8dbb6-c21b-4b26-8f35-d73260c95fa1",
+  "title": "Entrance Display Left",
+  "venue_type_id": "501",
+  "location_id": "Loc_f9FxuWDTfzy",
+  "width": 1920,
+  "height": 1080,
+  "loop_duration": 60,
+  "archived": false,
+  "available_for_ads": true,
+  "amount": 1,
+  "imps_weekly": null
+}
+```
+
+---
+
+## List all screens
+
+```
+GET /vendor/{org_token}/screens
+```
+
+### Path parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `org_token` | string | Yes | Your organization token |
+
+### Example request
+
+```bash
+curl -X GET "https://api.framen.com/vendor/Org_9WeJxcVrRnM/screens"
+```
+
+### Response
+
+Returns an array of screen objects. There is no pagination â all screens are returned in a single response.
+
+---
+
+## Get a screen
+
+```
+GET /vendor/{org_token}/screens/{screen_id}
+```
+
+### Path parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `org_token` | string | Yes | Your organization token |
+| `screen_id` | string | Yes | The screen ID (UUID) |
+
+### Example request
+
+```bash
+curl -X GET "https://api.framen.com/vendor/Org_9WeJxcVrRnM/screens/d3c8dbb6-c21b-4b26-8f35-d73260c95fa1"
+```
+
+### Response
+
+Returns a single screen object. Returns `404` if the screen does not exist.
+
+---
+
+## Update a screen
+
+```
+POST /vendor/{org_token}/screens/{screen_id}
+```
+
+Send only the fields you want to change. Omitted fields are left unchanged.
+
+### Path parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `org_token` | string | Yes | Your organization token |
+| `screen_id` | string | Yes | The screen ID |
+
+### Request body
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `title` | string | |
+| `venue_type_id` | string | Must still satisfy the parent-child constraint |
+| `location_id` | string | Moving a screen to a new location resets that location's status to `REVIEW` |
+| `width` | int | |
+| `height` | int | |
+| `loop_duration` | int | In seconds |
+| `archived` | boolean | |
+| `available_for_ads` | boolean | |
+| `amount` | int | |
+| `imps_weekly` | int | |
+
+<Warning>
+Changing a screen's `location_id` resets the **new** location's status to `REVIEW`, even if it was previously `APPROVED`. This may temporarily disrupt ad delivery at the destination location.
+</Warning>
+
+### Example request
+
+```bash
+curl -X POST "https://api.framen.com/vendor/Org_9WeJxcVrRnM/screens/d3c8dbb6-c21b-4b26-8f35-d73260c95fa1" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Entrance Display Left (Updated)",
+    "available_for_ads": false
+  }'
+```
+
+### Response
+
+Returns the updated screen object.
+
+---
+
+## Disabling ad delivery
+
+Setting `available_for_ads: false` on a screen **immediately stops** ad delivery. The [Real-Time Ads endpoint](/api-reference/ad-delivery/get-spot) will return `ad: null` for that screen, and it will appear offline in the Ads Manager.
+
+This is different from the location-level `available_for_ads`, which only affects future campaign targeting but does not stop already-running campaigns. See [Locations â Archiving vs. disabling ads](/api-reference/inventory/locations#archiving-vs-disabling-ads) for details.
+
+## Common screen resolutions
+
+| Orientation | Width | Height | Aspect Ratio |
+|-------------|-------|--------|-------------|
+| Landscape | 1920 | 1080 | 16:9 |
+| Portrait | 1080 | 1920 | 9:16 |
+
+While the API accepts any resolution, FRAMEN's ad network is optimized for **16:9** (landscape) and **9:16** (portrait) aspect ratios. Using other ratios may result in fewer ad fills.

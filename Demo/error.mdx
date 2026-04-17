@@ -1,0 +1,84 @@
+---
+title: Error Reference
+description: HTTP error codes and troubleshooting guidance for the Framen SMAPI
+---
+
+# Error Reference
+
+The Framen SMAPI uses standard HTTP status codes. Errors return a JSON body with details where available.
+
+## HTTP Status Codes
+
+| Code | Name | Meaning |
+|------|------|---------|
+| `200` | OK | Request succeeded |
+| `201` | Created | Resource created successfully |
+| `400` | Bad Request | Invalid parameters or missing required fields |
+| `401` | Unauthorized | Invalid or missing `org_token` |
+| `403` | Forbidden | Your org does not have access to this resource |
+| `404` | Not Found | Resource does not exist or belongs to another org |
+| `409` | Conflict | State conflict (e.g. updating an archived resource) |
+| `422` | Unprocessable Entity | Validation error (e.g. invalid `venue_type_id` level) |
+| `500` | Internal Server Error | Unexpected server error — contact support |
+
+---
+
+## Common Errors
+
+### Invalid `venue_type_id`
+
+```json
+{ "error": "venue_type_id must be selectable and of level 2 for Locations" }
+```
+
+**Fix:** Only use `selectable: true` venue types. Level 2 for Locations, level 2 or 3 for Screens. Fetch the full list via [Get Venue Types](/api-reference/inventory/venue-types).
+
+---
+
+### Screen/Location venue type mismatch
+
+```json
+{ "error": "screen.venue_type_id must be same or child of location.venue_type_id" }
+```
+
+**Fix:** Check that the screen's `venue_type_id` is either identical to the location's, or a level 3 child of it.
+
+---
+
+### Setting `available_for_ads` on a non-approved Location
+
+```json
+{ "error": "available_for_ads cannot be set while location.status is DRAFT or REVIEW" }
+```
+
+**Fix:** Wait for Framen to approve the Location before toggling ad availability.
+
+---
+
+### Proof of Play expired or already fired
+
+```
+HTTP 410 Gone
+```
+
+**Fix:** PoP URLs are single-use and expire 1 hour after the ad request. Fire the PoP URL immediately after display. Request a fresh creative for the next slot.
+
+---
+
+### Re-review triggered unexpectedly
+
+If an approved Location unexpectedly returns to `REVIEW` status, check whether a recent Screen update changed the `location_id` — this always triggers a Location re-review.
+
+---
+
+## Getting Help
+
+If you encounter persistent errors or unexpected behaviour, contact the Framen team:
+
+📧 [support@framen.com](mailto:support@framen.com)
+
+Please include:
+- Your `org_token` (prefix only, e.g. `Org_9WeJ...`)
+- The full request URL and body
+- The response body and HTTP status code
+- Timestamp of the request

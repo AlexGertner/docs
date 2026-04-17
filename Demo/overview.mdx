@@ -1,0 +1,67 @@
+---
+title: Inventory Overview
+description: Understanding the Framen inventory model — Locations, Screens, and Venue Types
+---
+
+# Inventory Overview
+
+Framen's inventory is structured as a hierarchy: **Locations** group **Screens**, and both are classified using **Venue Types**.
+
+## Data Model
+
+```
+Venue Type (level 2)
+    └── Location
+            └── Screen (venue_type = same or child of Location's)
+```
+
+### Locations
+
+Locations act as **geographical anchors** — a physical address or place (e.g. a shopping mall, airport, or office building). Key properties:
+
+- Define opening hours (`opening_168` — a boolean array of 168 hours/week)
+- Carry visitor estimates (`visitors_7` — daily averages across 7 days)
+- Must be **approved by Framen** before screens can serve ads
+- Status lifecycle: `DRAFT → REVIEW → APPROVED`
+
+### Screens
+
+Screens are the individual display units connected to a Location. Key properties:
+
+- Must reference a valid `location_id`
+- `venue_type_id` must match or be a child of the Location's `venue_type_id`
+- Carry technical specs: `width`, `height`, `loop_duration`
+- Carry audience data: `amount` (number of screens at spot), `imps_weekly`
+
+### Venue Types
+
+A 3-level taxonomy used to classify the environment:
+
+| Level | Example | Selectable |
+|-------|---------|------------|
+| 1 | Transit | No |
+| 2 | Airport | Yes — assign to Location |
+| 3 | Arrival Hall (Airport) | Yes — assign to Screen |
+
+<Info>
+`venue_type_id` in Screens and Locations corresponds to `id` in each venue type object. Screens must have either the same `venue_type_id` as their Location (level 2) or a child of it (level 3).
+</Info>
+
+## Creation Order
+
+Always create inventory in this sequence:
+
+<Steps>
+  <Step title="Get Venue Types">
+    Fetch the full taxonomy to pick the right `venue_type_id` for your location and screens.
+  </Step>
+  <Step title="Create a Location">
+    POST a new Location with at minimum a `title`. Fill in review-required fields to submit for approval.
+  </Step>
+  <Step title="Submit for Review">
+    Update the Location's `status` to `REVIEW` once all required fields are populated.
+  </Step>
+  <Step title="Create Screens">
+    Once the Location exists (approval not required to create screens, only to serve ads), POST your screens referencing the `location_id`.
+  </Step>
+</Steps>
