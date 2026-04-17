@@ -8,9 +8,9 @@ api: "GET https://api.framen.com/vendor/{org_token}/venue_types"
 
 Retrieve all available venue types. Venue types classify locations and screens into a **3-level hierarchy**:
 
-- **Level 1** â Category (not selectable, e.g., "Transit")
-- **Level 2** â Venue type (selectable, e.g., "Airport")
-- **Level 3** â Sub-venue type (selectable, e.g., "Arrival Hall (Airport)")
+- **Level 1** — Category (not selectable, e.g., "Transit")
+- **Level 2** — Venue type (selectable, e.g., "Airports")
+- **Level 3** — Sub-venue type (selectable, e.g., "Arrival Hall (Airport)")
 
 The `id` values returned here are used as `venue_type_id` in both the Screens and Locations endpoints.
 
@@ -26,7 +26,7 @@ Returns an array of venue type objects.
 
 | Field | Type | Description |
 |---|---|---|
-| `label` | string | Display name (e.g., "Airport") |
+| `label` | string | Display name (e.g., "Airports") |
 | `id` | string | Venue type ID (used as `venue_type_id` in Screens and Locations) |
 | `parent_id` | string \| null | ID of the parent venue type. `null` for level 1 |
 | `level` | integer | `1` = category, `2` = venue type, `3` = sub-venue type |
@@ -45,27 +45,59 @@ curl -X GET https://api.framen.com/vendor/Org_4KmTqZnWpLx/venue_types
 [
   {
     "label": "Transit",
-    "id": "vt_transit_001",
+    "id": "1",
     "parent_id": null,
     "level": 1,
     "selectable": false,
-    "description": "Transportation hubs and stations"
+    "description": null
   },
   {
-    "label": "Airport",
-    "id": "vt_airport_002",
-    "parent_id": "vt_transit_001",
+    "label": "Airports",
+    "id": "101",
+    "parent_id": "1",
     "level": 2,
     "selectable": true,
-    "description": "Airport terminals and facilities"
+    "description": "Signage located throughout terminals in arrival and departure areas, ticketing areas, baggage claim, gate-hold rooms, concourses, retail shops, and VIP lounges."
   },
   {
     "label": "Arrival Hall (Airport)",
-    "id": "vt_arrival_003",
-    "parent_id": "vt_airport_002",
+    "id": "10101",
+    "parent_id": "101",
     "level": 3,
     "selectable": true,
-    "description": "Arrival hall area within an airport"
+    "description": "Signage is positioned at locations for meeting passengers arriving on flights"
+  },
+  {
+    "label": "Retail",
+    "id": "2",
+    "parent_id": null,
+    "level": 1,
+    "selectable": false,
+    "description": null
+  },
+  {
+    "label": "Malls",
+    "id": "205",
+    "parent_id": "2",
+    "level": 2,
+    "selectable": true,
+    "description": "Signage in enclosed shopping malls, including common areas, food courts, and walkways."
+  },
+  {
+    "label": "Hospitality",
+    "id": "3",
+    "parent_id": null,
+    "level": 1,
+    "selectable": false,
+    "description": null
+  },
+  {
+    "label": "Hotels",
+    "id": "301",
+    "parent_id": "3",
+    "level": 2,
+    "selectable": true,
+    "description": "Signage in hotel properties including lobbies, corridors, conference areas, and guest amenities."
   }
 ]
 ```

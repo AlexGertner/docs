@@ -1,7 +1,6 @@
 ---
 title: "Proof of Play"
 description: "Confirm that content has been displayed on a screen."
-api: "GET https://api.framen.com/v3/vendor/{org_token}/pop/{pop_id}"
 ---
 
 ## Proof of Play
@@ -12,11 +11,12 @@ The `pop` field returned in the [Get Spot](/api-reference/ad-delivery/get-spot) 
 
 - A proof-of-play URL can only be registered **once**. Subsequent calls will be ignored.
 - The proof-of-play request **must happen within 1 hour** of the original ad request.
+- If the GET request fails (network error, timeout, 5xx), retry up to 3 times with exponential backoff (e.g., 1s, 2s, 4s). Retries are safe because the server deduplicates by spot ID.
 
 ### Example
 
 After displaying the content from a Get Spot response, fire the proof-of-play URL:
 
 ```bash
-curl -X GET "https://api.framen.com/v3/vendor/Org_4KmTqZnWpLx/pop/pop_abc123def456"
+curl -X GET "https://api.framen.com/pop/5Kv88XyDCkWHf4DTHeS63BmAmMjWatjZRYcWN1cWq3rm"
 ```

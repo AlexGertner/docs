@@ -14,10 +14,6 @@ Locations go through an approval process: `DRAFT → REVIEW → APPROVED`. Provi
   Your organization token (e.g., `Org_4KmTqZnWpLx`).
 </ParamField>
 
-<ParamField body="location_id" type="string" required>
-  Your unique identifier for this location (e.g., `Loc_f9FxuWDTfzy`).
-</ParamField>
-
 <ParamField body="title" type="string" required>
   Display name of the location.
 </ParamField>
@@ -60,9 +56,8 @@ Locations go through an approval process: `DRAFT → REVIEW → APPROVED`. Provi
 curl -X POST https://api.framen.com/vendor/{org_token}/locations \
   -H "Content-Type: application/json" \
   -d '{
-    "location_id": "Loc_f9FxuWDTfzy",
     "title": "Berlin Hauptbahnhof",
-    "venue_type_id": "vt_abc123",
+    "venue_type_id": "205",
     "lat": 52.5251,
     "long": 13.3694,
     "opening_168": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, false],
