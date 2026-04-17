@@ -6,7 +6,7 @@ api: "POST https://api.framen.com/vendor/{org_token}/locations/{location_id}"
 
 ## Update a Location
 
-Update an existing location's details. All body parameters are optional â only include the fields you want to change.
+Update an existing location's details. All body parameters are optional -- only include the fields you want to change.
 
 <ParamField path="org_token" type="string" required>
   Your organization token (e.g., `Org_4KmTqZnWpLx`).
@@ -41,7 +41,7 @@ Update an existing location's details. All body parameters are optional â o
 </ParamField>
 
 <ParamField body="status" type="string">
-  Location status. Can only be changed via `DRAFT â REVIEW`. You cannot set it to `APPROVED` yourself.
+  Location status. Can only be changed via `DRAFT -> REVIEW`. You cannot set it to `APPROVED` yourself.
 </ParamField>
 
 <ParamField body="available_for_ads" type="boolean">

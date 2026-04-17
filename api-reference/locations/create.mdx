@@ -8,7 +8,7 @@ api: "POST https://api.framen.com/vendor/{org_token}/locations"
 
 Register a new physical location in your organization. The location will initially be created with a `DRAFT` status and must be approved before screens can be deployed.
 
-Locations go through an approval process: `DRAFT → REVIEW → APPROVED`. Providing all "required for Review" fields automatically moves the status to `REVIEW`. FRAMEN then performs the approval.
+Locations go through an approval process: `DRAFT -> REVIEW -> APPROVED`. Providing all "required for Review" fields automatically moves the status to `REVIEW`. FRAMEN then performs the approval.
 
 <ParamField path="org_token" type="string" required>
   Your organization token (e.g., `Org_4KmTqZnWpLx`).
