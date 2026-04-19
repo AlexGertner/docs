@@ -8,9 +8,9 @@ api: "GET https://api.framen.com/vendor/{org_token}/venue_types"
 
 Retrieve all available venue types. Venue types classify locations and screens into a **3-level hierarchy**:
 
-- **Level 1** -- Category (not selectable, e.g., "Transit")
-- **Level 2** -- Venue type (selectable, e.g., "Airports")
-- **Level 3** -- Sub-venue type (selectable, e.g., "Arrival Hall (Airport)")
+- **Level 1** -- Category (not selectable, e.g., "Retail")
+- **Level 2** -- Venue type (selectable, e.g., "Grocery")
+- **Level 3** -- Sub-venue type (selectable, e.g., "Shop Entrance (Grocery)")
 
 The `id` values returned here are used as `venue_type_id` in both the Screens and Locations endpoints.
 
@@ -26,7 +26,7 @@ Returns an array of venue type objects.
 
 | Field | Type | Description |
 |---|---|---|
-| `label` | string | Display name (e.g., "Airports") |
+| `label` | string | Display name (e.g., "Grocery") |
 | `id` | string | Venue type ID (used as `venue_type_id` in Screens and Locations) |
 | `parent_id` | string \| null | ID of the parent venue type. `null` for level 1 |
 | `level` | integer | `1` = category, `2` = venue type, `3` = sub-venue type |
@@ -44,60 +44,36 @@ curl -X GET https://api.framen.com/vendor/Org_4KmTqZnWpLx/venue_types
 ```json
 [
   {
-    "label": "Transit",
-    "id": "1",
-    "parent_id": null,
-    "level": 1,
-    "selectable": false,
-    "description": null
-  },
-  {
-    "label": "Airports",
-    "id": "101",
-    "parent_id": "1",
-    "level": 2,
-    "selectable": true,
-    "description": "Signage located throughout terminals in arrival and departure areas, ticketing areas, baggage claim, gate-hold rooms, concourses, retail shops, and VIP lounges."
-  },
-  {
-    "label": "Arrival Hall (Airport)",
-    "id": "10101",
-    "parent_id": "101",
-    "level": 3,
-    "selectable": true,
-    "description": "Signage is positioned at locations for meeting passengers arriving on flights"
-  },
-  {
     "label": "Retail",
     "id": "2",
     "parent_id": null,
     "level": 1,
     "selectable": false,
-    "description": null
+    "description": "These dynamic screens are strategically placed in key locations throughout shopping centers, malls, and retail districts."
   },
   {
-    "label": "Malls",
-    "id": "205",
+    "label": "Grocery",
+    "id": "203",
     "parent_id": "2",
     "level": 2,
     "selectable": true,
-    "description": "Signage in enclosed shopping malls, including common areas, food courts, and walkways."
+    "description": "Digital signage is dispersed throughout supermarkets, you'll often find screens in direct view of shoppers, above cash points, at the entrance/exit, within the shelves, in the aisles and on the walls."
   },
   {
-    "label": "Hospitality",
-    "id": "3",
-    "parent_id": null,
-    "level": 1,
-    "selectable": false,
-    "description": null
-  },
-  {
-    "label": "Hotels",
-    "id": "301",
-    "parent_id": "3",
-    "level": 2,
+    "label": "Shop Entrance (Grocery)",
+    "id": "20301",
+    "parent_id": "203",
+    "level": 3,
     "selectable": true,
-    "description": "Signage in hotel properties including lobbies, corridors, conference areas, and guest amenities."
+    "description": "As shoppers enter the supermarket, there'll usually be medium to large sized screens close to the entrance, so consumers have a prominent view of ads."
+  },
+  {
+    "label": "Check Out (Grocery)",
+    "id": "20302",
+    "parent_id": "203",
+    "level": 3,
+    "selectable": true,
+    "description": "The till areas are where consumers pay for their purchases, and here you'll find display monitors close to the bagging area or above the self-service check out points."
   }
 ]
 ```
