@@ -128,5 +128,9 @@
   },
   "appearance": {
     "default": "system"
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs",
+    "latex": false
   }
 }
