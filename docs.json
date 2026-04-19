@@ -3,8 +3,8 @@
   "name": "Screen Manager API",
   "theme": "palm",
   "logo": {
-    "light": "https://cdn.prod.website-files.com/6364e4e8baec60a3a1eff938/690b1e4179acc4f0aa8d1c51_Logo.svg",
-    "dark": "https://cdn.prod.website-files.com/6364e4e8baec60a3a1eff938/690b1e4179acc4f0aa8d1c51_Logo.svg"
+    "light": "/logo_light.svg",
+    "dark": "/logo_dark.svg"
   },
   "favicon": "/favicon.svg",
   "colors": {
