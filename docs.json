@@ -4,7 +4,7 @@
   "theme": "mint",
   "logo": {
     "light": "/logo_light.svg",
-    "dark": "/logo_light.svg"
+    "dark": "/logo_dark.svg"
   },
   "favicon": "/favicon.svg",
   "colors": {
@@ -121,7 +121,7 @@
   },
   "background": {
     "color": {
-      "dark": "#000000",
+      "dark": "#121212",
       "light": "#ffffff"
     },
     "decoration": "grid"
