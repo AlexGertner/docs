@@ -46,7 +46,7 @@
             "group": "Getting Started",
             "pages": [
               "api-reference/introduction",
-              "authentication"
+              "api-reference/authentication"
             ]
           },
           {
