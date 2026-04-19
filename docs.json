@@ -1,10 +1,10 @@
 {
   "$schema": "https://mintlify.com/schema.json",
   "name": "Screen Manager API",
-  "theme": "palm",
+  "theme": "mint",
   "logo": {
     "light": "/logo_light.svg",
-    "dark": "/logo_dark.svg"
+    "dark": "/logo_light.svg"
   },
   "favicon": "/favicon.svg",
   "colors": {
@@ -104,5 +104,32 @@
         ]
       }
     ]
+  },
+  "fonts": {
+    "family": "Inter"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Dashboard",
+        "href": "https://dashboard.framen.com/"
+      }
+    ]
+  },
+  "interaction": {
+    "drilldown": true
+  },
+  "metadata": {
+    "timestamp": true
+  },
+  "background": {
+    "color": {
+      "dark": "#000000",
+      "light": "#ffffff"
+    },
+    "decoration": "grid"
+  },
+  "appearance": {
+    "default": "system"
   }
 }
