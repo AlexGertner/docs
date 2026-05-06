@@ -22,15 +22,14 @@ Array of objects with the following properties:
 
 | Field | Type | Description |
 | --- | --- | --- |
-| id | string | Unique CAR identifier |
-| status | string | Current status: `pending`, `approved`, or `rejected` |
-| advertiser_name | string | Name of the advertiser |
-| campaign_name | string | Name of the advertising campaign |
-| creative | object | Creative asset object with url, width, height, duration, mime_type |
-| rejection_reasons | array \| null | Rejection reasons if rejected, otherwise null |
-| custom_message | string \| null | Custom rejection message if provided |
-| created_at | string | ISO 8601 creation timestamp |
-| updated_at | string | ISO 8601 last modified timestamp |
+| `id` | string | Unique CAR identifier |
+| `status` | string | Current status: `pending`, `approved`, or `rejected` |
+| `advertiser_name` | string | Name of the advertiser |
+| `item` | object | Creative asset object with url, width, height, duration, mime_type |
+| `rejection_reasons` | array \| null | Rejection reasons if rejected, otherwise null |
+| `custom_message` | string \| null | Custom rejection message if provided |
+| `created_at` | string | ISO 8601 creation timestamp |
+| `updated_at` | string | ISO 8601 last modified timestamp |
 
 ### Example Request
 
