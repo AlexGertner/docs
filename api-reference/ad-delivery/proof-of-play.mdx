@@ -20,3 +20,35 @@ After displaying the content from a Get Spot response, fire the proof-of-play UR
 ```bash
 curl -X GET "https://api.framen.com/pop/5Kv88XyDCkWHf4DTHeS63BmAmMjWatjZRYcWN1cWq3rm"
 ```
+
+### Proof-of-Play Dashboard
+
+You can embed a live proof-of-play dashboard using Metabase. Below is an example of how to set this up in your application:
+
+```html
+<script defer src="https://metabase.framen.io/app/embed.js"></script>
+<script>
+function defineMetabaseConfig(config) {
+  window.metabaseConfig = config;
+}
+</script>
+<script>
+  defineMetabaseConfig({
+    "theme": {
+      "preset": "light"
+    },
+    "isGuest": true,
+    "instanceUrl": "https://metabase.framen.io"
+  });
+</script>
+<!--
+THIS IS THE EXAMPLE!
+NEVER HARDCODE THIS JWT TOKEN DIRECTLY IN YOUR HTML!
+Fetch the JWT token from your backend and programmatically pass it to the 'metabase-question'.
+-->
+<metabase-question token="eyJhbGciOiJIUzI1NiJ9.eyJyZXNvdXJjZSI6eyJxdWVzdGlvbiI6NDQ5OH0sInBhcmFtcyI6e30sImlhdCI6MTc3ODYwNzgyMiwiZXhwIjoxNzc4NjA4NDIyLCJfZW1iZWRkaW5nX3BhcmFtcyI6eyJvcmdfdG9rZW4iOiJlbmFibGVkIiwic2NyZWVuX2lkIjoiZW5hYmxlZCJ9fQ.BIHHhUVj45C_efIBlcezZJj0lOYdjqZlDAdHRawZddI" with-title="false" with-downloads="true" entity-types='["model"]'></metabase-question>
+```
+
+<Warning>
+**Never hardcode the JWT token in production.** The token shown above is an example only. Always fetch the JWT token from your backend and pass it programmatically to the `metabase-question` element.
+</Warning>
