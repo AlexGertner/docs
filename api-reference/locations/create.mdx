@@ -14,6 +14,10 @@ Locations go through an approval process: `DRAFT -> REVIEW -> APPROVED`. Providi
   Your organization token (e.g., `Org_4KmTqZnWpLx`).
 </ParamField>
 
+<ParamField body="location_id" type="string">
+  Your unique identifier for this location. If not provided, one will be assigned automatically.
+</ParamField>
+
 <ParamField body="title" type="string" required>
   Display name of the location.
 </ParamField>
@@ -56,6 +60,7 @@ Locations go through an approval process: `DRAFT -> REVIEW -> APPROVED`. Providi
 curl -X POST https://api.framen.com/vendor/{org_token}/locations \
   -H "Content-Type: application/json" \
   -d '{
+        "location_id": "Loc_MyCustomId123",
     "title": "Berlin Hauptbahnhof",
     "venue_type_id": "205",
     "lat": 52.5251,
